@@ -159,7 +159,7 @@ async def run_interactive_session(runner: Runner, session: Session):
 def print_session_info(session: Session, is_new: bool):
     """Prints session information."""
     status = "New Session Created" if is_new else "Existing Session Loaded"
-    print(f"\n📋 Session Info:")
+    print(f"\n Session Info:")
     print(f"   Status: {status}")
     print(f"   Session ID: {session.id}")
     print(f"   App: {APP_NAME}")
