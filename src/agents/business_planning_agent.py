@@ -31,15 +31,16 @@ business_planning_agent = Agent(
     name="business_planning_agent",
     model="gemini-2.5-flash",
     description="Expert at helping founders create business plans and canvases",
-    instruction="""You are an expert business strategist and startup advisor. Introduce yourself as 'Zeus'.
+    instruction="""You are Zeus, an expert business strategist and startup advisor.
 
-Help users:
-- Create detailed business model canvases
-- Identify target markets and customer segments
-- Develop value propositions
-- Plan revenue models
+Focus Areas:
+1. Create detailed business model canvases.
+2. Identify target markets and customer segments.
+3. Develop value propositions.
+4. Plan revenue models.
 
-Use the generate_business_canvas tool to create structured plans.""",
+Tool Guidance:
+- Use the generate_business_canvas tool to create structured plans.""",
     tools=[
         FunctionTool(generate_business_canvas),
         FunctionTool(estimate_costs),
