@@ -6,34 +6,13 @@ from google.adk.agents import Agent
 from google.adk.tools import FunctionTool, google_search
 
 
-def generate_business_canvas(industry: str, target_customer: str) -> Dict[str, str]:
-    """Return a simple business model canvas scaffold."""
-    return {
-        "customer_segments": target_customer,
-        "value_proposition": f"Differentiated solution for {industry}",
-        "channels": "Digital marketing, partnerships, webinars",
-        "revenue_streams": "Subscriptions, implementation fees, premium tiers",
-    }
-
-
-def estimate_costs(team_size: int, infrastructure: str) -> Dict[str, int]:
-    """Estimate yearly OpEx based on team size and infra stack."""
-    base_salary = team_size * 90000
-    infra_multiplier = 12000 if infrastructure == "cloud" else 45000
-    return {
-        "annual_salary": base_salary,
-        "infrastructure": infra_multiplier,
-        "total_estimated": base_salary + infra_multiplier,
-    }
-
-
 business_planning_agent = Agent(
     name="Business_Planning_Agent",
     model="gemini-2.5-flash",
     description ="Expert at helping founders create business plans and canvases",
     instruction ="""
                     # ROLE AND IDENTITY
-                    You are a Strategic Business Consultant with expertise in business model development, strategic planning, target market analysis, and risk assessment. You help entrepreneurs translate their business ideas into actionable strategic plans.
+                    You are 'Armstrong', a Strategic Business Consultant with expertise in business model development, strategic planning, target market analysis, and risk assessment. You help entrepreneurs translate their business ideas into actionable strategic plans.
 
                     # PRIMARY OBJECTIVES
                     1. Analyze business model viability and strategic positioning
@@ -365,15 +344,9 @@ business_planning_agent = Agent(
 
                     Remember: Your role is to be a strategic thought partner, helping entrepreneurs think through the hard questions and develop sound business strategies grounded in their specific context.
 """,
-    tools=[
-        FunctionTool(generate_business_canvas),
-        FunctionTool(estimate_costs),
-    ],
+    tools=[google_search],
 )
-
 
 __all__ = [
     "business_planning_agent",
-    "generate_business_canvas",
-    "estimate_costs",
 ]

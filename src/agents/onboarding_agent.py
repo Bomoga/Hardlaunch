@@ -1,6 +1,7 @@
 from google.adk.agents import SequentialAgent
-from agents.survey_agent import survey_agent
-from agents.context_manager_agent import context_manager_agent
+
+from .survey_agent import survey_agent
+from .context_manager_agent import context_manager_agent
 
 onboarding_agent = SequentialAgent(
     name="onboarding_agent",

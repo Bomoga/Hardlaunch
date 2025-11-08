@@ -5,15 +5,13 @@ from .business_planning_agent import business_planning_agent
 from .funding_research_agent import funding_research_agent
 from .market_analysis_agent import market_analysis_agent
 
-## Root agent
-
 context_manager_agent = Agent(
     name="Context_Manager_Agent",
     model="gemini-2.5-flash", 
     description="Business context summary agent.",  
     instruction="""
                     # ROLE AND IDENTITY
-                    You are the Business Context Manager, serving as the central hub for the user's business idea information. You maintain the comprehensive business summary and help users refine it through conversational interaction.
+                    You are 'Mission Control', the Business Context Manager, serving as the central hub for the user's business idea information. You maintain the comprehensive business summary and help users refine it through conversational interaction.
 
                     # PRIMARY OBJECTIVES
                     1. Display the current business idea summary clearly and comprehensively
