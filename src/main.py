@@ -8,6 +8,7 @@ from google.adk.sessions import InMemorySessionService, Session
 
 from agents.context_manager_agent import context_manager_agent
 from agents.onboarding_agent import onboarding_agent
+from tools.context_memory_tools import BUSINESS_SUMMARY_KEY
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -92,7 +93,7 @@ async def run_onboarding(session: Session) -> Runner:
             session_id=session.id
         )
         
-        if current_session.state.get("business_summary"):
+        if current_session.state.get(BUSINESS_SUMMARY_KEY):
             survey_complete = True
             print("\nSurvey completed! Transitioning to Context Manager...\n")
     
@@ -131,7 +132,7 @@ async def run_interactive_session(runner: Runner, session: Session):
             print("\n🔄 Restarting business survey...\n")
             
             # Clear business_summary from state
-            session.state.pop("business_summary", None)
+            session.state.pop(BUSINESS_SUMMARY_KEY, None)
             
             # Re-run onboarding workflow
             new_runner = await run_onboarding(session)
@@ -169,12 +170,15 @@ async def main() -> None:
     
     # Initialize session
     # Check if user has existing sessions
-    existing_sessions = session_service.list_sessions(
+    existing_sessions_response = await session_service.list_sessions(
         app_name=APP_NAME,
-        user_id=USER_ID
+        user_id=USER_ID,
+    )
+    existing_sessions = (
+        existing_sessions_response.sessions if existing_sessions_response else []
     )
     
-    if existing_sessions and len(existing_sessions) > 0:
+    if existing_sessions:
         # Load existing session
         session = await session_service.get_session(
             app_name=APP_NAME,
@@ -184,7 +188,7 @@ async def main() -> None:
         print_session_info(session, is_new=False)
         
         # Check if onboarding was completed
-        if not session.state.get("business_summary"):
+        if not session.state.get(BUSINESS_SUMMARY_KEY):
             print("Previous session found but survey incomplete. Starting onboarding...\n")
             runner = await run_onboarding(session)
         else:
