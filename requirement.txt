@@ -20,3 +20,13 @@ google-generativeai
 google-genai
 python-dotenv
 ipython
+llama-index
+google-generativeai
+yt-dlp
+openai-whisper
+youtube-transcript-api
+requests
+beautifulsoup4
+pypdf
+torch
+python-dotenv
