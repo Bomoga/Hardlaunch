@@ -76,7 +76,7 @@ print("BUILDING RAG SYSTEM")
 print("="*70)
 
 Settings.llm = GoogleGenAI(
-    model=MODEL_NAME  # or another valid Gemini model name
+    model=MODEL_NAME  
 )
 Settings.embed_model = GoogleGenAIEmbedding(
     model_name="models/embedding-001")  # Corrected model name

@@ -1,9 +1,11 @@
 from google.adk.agents import Agent
 from google.adk.tools.agent_tool import AgentTool
+from tools.rag_tools import rag_lookup_tool
 
 from .business_planning_agent import business_planning_agent
 from .funding_research_agent import funding_research_agent
 from .market_analysis_agent import market_analysis_agent
+
 
 context_manager_agent = Agent(
     name="Context_Manager_Agent",
@@ -224,12 +226,19 @@ context_manager_agent = Agent(
                     4. Users understand their options and next steps
                     5. The summary evolves appropriately as the business idea develops
 
+                    # RAG REFERENCE
+                    When you or the specialized agents need concrete facts, citations, or supporting evidence,
+                    call the `rag_lookup` tool with a focused question before writing
+                    summaries or startup plans. Cite retrieved filenames when possible.
+                    
+
                     Remember: You are the single source of truth for the user's business idea. Accuracy, completeness, and consistency are paramount.
                     """,
     tools=[
         AgentTool(business_planning_agent),
         AgentTool(funding_research_agent),
         AgentTool(market_analysis_agent),
+        rag_lookup_tool
     ],
 )
 
