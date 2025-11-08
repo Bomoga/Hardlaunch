@@ -3,8 +3,6 @@ from __future__ import annotations
 from google.adk.agents import Agent
 from google.adk.tools import FunctionTool
 
-from tools.context_memory_tools import save_business_summary
-
 survey_agent = Agent(
     name="Survey_Agent",
     model="gemini-2.5-flash",
@@ -181,7 +179,7 @@ survey_agent = Agent(
 
                     Remember: Your success is measured by the completeness and accuracy of the business idea summary you produce. Every question should serve to fill gaps or clarify ambiguities in your understanding.
 """,
-    tools=[FunctionTool(save_business_summary)],
+    output_key = "business_summary",
 )
 
 

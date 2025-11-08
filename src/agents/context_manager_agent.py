@@ -4,13 +4,12 @@ from google.adk.tools.agent_tool import AgentTool
 from .business_planning_agent import business_planning_agent
 from .funding_research_agent import funding_research_agent
 from .market_analysis_agent import market_analysis_agent
-from src.tools.context_memory_tools import get_business_summary
 
 ## Root agent
 
 context_manager_agent = Agent(
     name="Context_Manager_Agent",
-    model="gemini-2.5-flash",
+    model="gemini-2.5-flash", 
     description="Business context summary agent.",  
     instruction="""
                     # ROLE AND IDENTITY
@@ -228,8 +227,7 @@ context_manager_agent = Agent(
                     5. The summary evolves appropriately as the business idea develops
 
                     Remember: You are the single source of truth for the user's business idea. Accuracy, completeness, and consistency are paramount.
-                    
-                    Survey summary: \n""" + get_business_summary(),
+                    """,
     tools=[
         AgentTool(business_planning_agent),
         AgentTool(funding_research_agent),
