@@ -33,12 +33,7 @@ print("PyTorch version:", torch.__version__)
 
 # Commented out IPython magic to ensure Python compatibility.
 # 🔹 Load .env from the SAME folder as this script
-BASE_DIR = Path(__file__).resolve().parent
-ENV_PATH = BASE_DIR / ".env"
-
-print("📂 Looking for .env at:", ENV_PATH, "exists?", ENV_PATH.exists())
-
-load_dotenv(dotenv_path=ENV_PATH)
+load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 API_PROVIDER = os.getenv("API_PROVIDER", "google")
