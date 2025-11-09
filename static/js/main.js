@@ -15,6 +15,15 @@ async function checkSubmissionStatus() {
     try {
         const response = await fetch(`${API_BASE}/submission-status?session_id=${sessionId}`);
         const data = await response.json();
+        
+        // If session not found, clear the invalid session ID
+        if (data.message && data.message.includes('Session not found')) {
+            console.log('Invalid session detected, clearing...');
+            localStorage.removeItem('hardlaunch_session_id');
+            localStorage.removeItem('business_summary');
+            window.sessionId = null;
+        }
+        
         return {
             submitted: data.submitted || false,
             hasSummary: data.has_summary || false,
@@ -120,6 +129,17 @@ async function sendMessage() {
         
         const data = await response.json();
         
+        // Check if response indicates invalid session
+        if (data.response && data.response.includes('Session not found')) {
+            console.log('Invalid session detected during chat, clearing...');
+            localStorage.removeItem('hardlaunch_session_id');
+            localStorage.removeItem('business_summary');
+            window.sessionId = null;
+            // Retry with fresh session
+            location.reload();
+            return;
+        }
+        
         if (data.session_id && !window.sessionId) {
             window.sessionId = data.session_id;
             localStorage.setItem('hardlaunch_session_id', window.sessionId);
@@ -192,6 +212,15 @@ async function submitAndContinue() {
                 window.location.href = '/';
             }, 500);
         } else {
+            // If session not found, clear and prompt refresh
+            if (data.message && data.message.includes('Session not found')) {
+                localStorage.removeItem('hardlaunch_session_id');
+                localStorage.removeItem('business_summary');
+                window.sessionId = null;
+                alert('Your session has expired. The page will refresh to create a new session.');
+                location.reload();
+                return;
+            }
             alert('Error submitting summary: ' + data.message);
             button.disabled = false;
             button.textContent = 'Submit & Continue to Dashboard →';
