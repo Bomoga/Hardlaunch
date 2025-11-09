@@ -4,7 +4,9 @@
 
 HardLaunch is an AI-powered startup planning platform that helps entrepreneurs transform business ideas into actionable strategies. The system uses an agentic workflow architecture built on Google's ADK (Agent Development Kit) to conduct conversational intake sessions and generate comprehensive business plans across multiple dimensions including business strategy, finance, market analysis, and engineering.
 
-The platform guides users through a structured survey process to capture their startup vision, then leverages specialized AI agents to provide expert guidance on business planning, funding strategy, market analysis, and technical architecture. All insights are grounded in a RAG (Retrieval-Augmented Generation) system that combines user context with external knowledge sources.
+The platform guides users through a structured survey process to capture their startup vision, then leverages specialized AI agents to provide expert guidance on business planning, funding strategy, market analysis, and technical architecture.
+
+**Current Status:** Fully functional with Google ADK agents integrated. The frontend is connected to the backend, and the survey/agent system is operational. RAG system is temporarily simplified to improve startup time.
 
 ## User Preferences
 
@@ -50,13 +52,11 @@ Preferred communication style: Simple, everyday language.
 - User-scoped state storage via ADK's State system
 - Business summary stored with metadata (source, timestamp) in `BUSINESS_SUMMARY_KEY`
 
-**RAG System (LlamaIndex + Gemini)**
-- Vector database using LlamaIndex for document storage and retrieval
-- Google Gemini embeddings (models/embedding-001) for semantic search
-- FAISS CPU-based vector indexing for efficient similarity search
-- Document persistence in `src/data/persist/` directory
-- Support for multiple content sources: YouTube transcripts, web pages, PDFs
-- Query enrichment by combining business summary context with user questions
+**RAG System (Currently Simplified)**
+- RAG document retrieval temporarily simplified to improve server startup time
+- Future enhancement: Full LlamaIndex integration with vector embeddings
+- Current implementation uses business summary context directly
+- Agents rely on Google Gemini's knowledge and web search capabilities
 
 **AI Models:**
 - Primary reasoning: Gemini 2.5 Flash (fast, cost-effective)
@@ -146,10 +146,17 @@ Preferred communication style: Simple, everyday language.
 - **Requests** - Synchronous HTTP client
 
 ### Configuration Requirements
-- **GEMINI_API_KEY** - Required environment variable for Google AI access
+- **GEMINI_API_KEY** - Required environment variable for Google AI access (configured in Replit Secrets)
 - **API_PROVIDER** - Optional, defaults to "google"
 - **MODEL_NAME** - Optional, defaults to "gemini-2.5-flash"
 - **EMBED_MODEL_NAME** - Optional, defaults to "models/embedding-001"
+
+### Deployment Setup
+- **Server**: FastAPI/Uvicorn on port 5000
+- **Hosting**: 0.0.0.0 (allows proxy access)
+- **Workflow**: Configured for autoscale deployment
+- **Static Files**: Served from /static directory
+- **API Endpoint**: /api/chat for agent interactions
 
 ### Known Architectural Limitations
 - Session storage is in-memory only (not production-ready)

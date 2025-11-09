@@ -1,10 +1,27 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+
+from dotenv import load_dotenv
+load_dotenv()
+
+import google.generativeai as genai
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService, Session
+from google.genai.types import Content, Part
+
+from agents.onboarding_agent import onboarding_agent
+from agents.context_manager_agent import context_manager_agent
+from tools.context_memory_tools import BUSINESS_SUMMARY_KEY
 
 app = FastAPI(title="HardLaunch")
 
@@ -16,7 +33,52 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-sessions = {}
+session_service = InMemorySessionService()
+APP_NAME = "Hardlaunch"
+
+async def run_agent_query(
+    runner: Runner,
+    query: str,
+    session: Session,
+    user_id: str,
+    verbose: bool = False,
+):
+    final_response = ""
+    try:
+        async for event in runner.run_async(
+            user_id=user_id,
+            session_id=session.id,
+            new_message=Content(parts=[Part(text=query)], role="user"),
+        ):
+            if verbose:
+                print(f"EVENT: {event}")
+
+            if event.is_final_response():
+                final_response = event.content.parts[0].text
+                
+    except Exception as e:
+        final_response = f"An error occurred: {e}"
+        print(f"Error in run_agent_query: {e}")
+
+    if verbose:
+        print("\n" + "-" * 50)
+        print("✅ Final Response:")
+        print(final_response)
+        print("-" * 50 + "\n")
+
+    return final_response
+
+async def get_or_create_session(session_id: str | None) -> Session:
+    if session_id:
+        try:
+            existing = await session_service.get_session(
+                app_name=APP_NAME, user_id=session_id, session_id=session_id
+            )
+            if existing:
+                return existing
+        except:
+            pass
+    return await session_service.create_session(app_name=APP_NAME, user_id=session_id or "anon")
 
 class ChatRequest(BaseModel):
     session_id: Optional[str] = None
@@ -28,112 +90,50 @@ class ChatResponse(BaseModel):
     summary: Optional[dict] = None
 
 @app.post("/api/chat", response_model=ChatResponse)
-async def chat_endpoint(request: ChatRequest):
-    import uuid
+async def chat_endpoint(payload: ChatRequest):
+    session = await get_or_create_session(payload.session_id)
     
-    if not request.session_id or request.session_id not in sessions:
-        session_id = request.session_id or str(uuid.uuid4())
-        sessions[session_id] = {
-            "messages": [],
-            "summary": None,
-            "survey_complete": False
-        }
-    else:
-        session_id = request.session_id
-    
-    session = sessions[session_id]
-    session["messages"].append({"role": "user", "content": request.message})
-    
-    if not session["survey_complete"]:
-        response_text = generate_survey_response(session, request.message)
-    else:
-        response_text = generate_agent_response(session, request.message)
-    
-    session["messages"].append({"role": "assistant", "content": response_text})
-    
-    return ChatResponse(
-        session_id=session_id,
-        response=response_text,
-        summary=session.get("summary")
+    latest_session = await session_service.get_session(
+        app_name=APP_NAME,
+        user_id=session.user_id,
+        session_id=session.id,
+    )
+    has_summary = bool(latest_session.state.get(BUSINESS_SUMMARY_KEY))
+
+    if not has_summary and not latest_session.events:
+        auto_runner = Runner(
+            agent=onboarding_agent,
+            session_service=session_service,
+            app_name=APP_NAME,
+        )
+        await run_agent_query(
+            runner=auto_runner,
+            query="__AUTO_START__",
+            session=session,
+            user_id=session.user_id,
+        )
+
+    agent = context_manager_agent if has_summary else onboarding_agent
+    runner = Runner(agent=agent, session_service=session_service, app_name=APP_NAME)
+
+    response_text = await run_agent_query(
+        runner=runner,
+        query=payload.message,
+        session=session,
+        user_id=session.user_id,
+        verbose=True,
     )
 
-def generate_survey_response(session, user_message):
-    messages = session["messages"]
-    user_messages_count = len([m for m in messages if m["role"] == "user"])
-    
-    if user_messages_count == 1:
-        return "Welcome to HardLaunch! Let's build your startup together. To get started, tell me about your business idea. What problem are you solving?"
-    elif user_messages_count == 2:
-        return "Great idea! Who is your target audience or customer? Who will benefit most from your solution?"
-    elif user_messages_count == 3:
-        return "Excellent! What makes your solution unique? What's your competitive advantage or 'moat'?"
-    elif user_messages_count == 4:
-        return "Perfect! What are your main constraints or limitations? (e.g., budget, time, resources, regulations)"
-    else:
-        session["survey_complete"] = True
-        session["summary"] = {
-            "idea": messages[0]["content"] if len(messages) > 0 else "Not provided",
-            "target_audience": messages[2]["content"] if len(messages) > 2 else "Not provided",
-            "competitive_advantage": messages[4]["content"] if len(messages) > 4 else "Not provided",
-            "constraints": messages[6]["content"] if len(messages) > 6 else "Not provided",
-            "status": "Survey completed"
-        }
-        return f"Thank you for completing the survey! I now understand your business:\n\n" \
-               f"✓ Your idea and the problem you're solving\n" \
-               f"✓ Your target audience\n" \
-               f"✓ Your competitive advantage\n" \
-               f"✓ Your constraints\n\n" \
-               f"You can now navigate to the Dashboard to explore different agents that will help you with " \
-               f"Business Planning, Financial Research, Market Analytics, and Engineering & Development. " \
-               f"Each agent is specialized to help you in different areas of your startup journey!"
+    latest_session = await session_service.get_session(
+        app_name=APP_NAME, user_id=session.user_id, session_id=session.id
+    )
+    summary = latest_session.state.get(BUSINESS_SUMMARY_KEY)
 
-def generate_agent_response(session, user_message):
-    message_lower = user_message.lower()
-    
-    if "business" in message_lower:
-        return "Business Planning Agent: I can help you with:\n" \
-               "• Refining your business idea and value proposition\n" \
-               "• Identifying your target users and market segments\n" \
-               "• Assessing your startup stage and readiness\n" \
-               "• Analyzing risks and creating mitigation strategies\n" \
-               "• Planning your growth trajectory\n\n" \
-               "What specific area would you like to focus on?"
-    
-    elif "finance" in message_lower or "financial" in message_lower:
-        return "Financial Research Agent: I can help you with:\n" \
-               "• Budget estimation and financial planning\n" \
-               "• Sales targets and revenue projections\n" \
-               "• Pricing model optimization\n" \
-               "• Funding strategies and investor preparation\n" \
-               "• Physical asset planning\n" \
-               "• Financial security and risk management\n\n" \
-               "What financial aspect do you need guidance on?"
-    
-    elif "market" in message_lower:
-        return "Market Analytics Agent: I can help you with:\n" \
-               "• Market size and opportunity analysis\n" \
-               "• Location and expansion strategies\n" \
-               "• Competitor research and positioning\n" \
-               "• Success rate benchmarking\n" \
-               "• Marketing and Go-To-Market (GTM) strategies\n\n" \
-               "Which market analysis would be most valuable for you?"
-    
-    elif "engineering" in message_lower or "technical" in message_lower:
-        return "Engineering & Development Agent: I can help you with:\n" \
-               "• Technology stack recommendations\n" \
-               "• Software architecture design\n" \
-               "• Machine learning integration opportunities\n" \
-               "• Third-party integrations and APIs\n" \
-               "• Development roadmap planning\n\n" \
-               "What technical challenge can I help you with?"
-    
-    else:
-        return "I'm here to help with your startup! You can ask me about:\n" \
-               "• Business planning and strategy\n" \
-               "• Financial projections and funding\n" \
-               "• Market analysis and competition\n" \
-               "• Engineering and technical development\n\n" \
-               "Visit the Dashboard to access specialized agents, or tell me what you'd like to explore!"
+    return ChatResponse(
+        session_id=session.id,
+        response=response_text,
+        summary=summary,
+    )
 
 @app.get("/")
 async def root():
@@ -143,7 +143,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
+    return {"status": "healthy", "gemini_configured": bool(os.getenv("GEMINI_API_KEY"))}
 
 if __name__ == "__main__":
     import uvicorn

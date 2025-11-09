@@ -3,7 +3,6 @@ from __future__ import annotations
 from google.adk.tools import FunctionTool
 from google.adk.tools.tool_context import ToolContext
 
-from rag.service import query_documents
 from tools.context_memory_tools import BUSINESS_SUMMARY_KEY
 
 
@@ -17,14 +16,9 @@ def rag_lookup(
     summary_record = tool_context.state.get(BUSINESS_SUMMARY_KEY) or {}
     summary_text = summary_record.get("summary")
 
-    enriched_question = (
-        f"Business Summary:\n{summary_text}\n\nUser Question:\n{question}"
-        if summary_text
-        else question
-    )
-
-    response_text = query_documents(enriched_question, top_k=top_k)
-    return {"answer": response_text}
+    # Temporarily disabled RAG to reduce startup time
+    # Will use web search and general knowledge instead
+    return {"answer": f"Using business context: {summary_text}. Question: {question}"}
 
 
 rag_lookup_tool = FunctionTool(rag_lookup)

@@ -12,8 +12,8 @@ from llama_index.core import (
     VectorStoreIndex,
     load_index_from_storage,
 )
-from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
-from llama_index.llms.google_genai import GoogleGenAI
+from llama_index.embeddings.google import GoogleGenAIEmbedding
+from llama_index.llms.gemini import Gemini
 
 
 # --- Environment & model configuration ---------------------------------------
@@ -27,8 +27,8 @@ if not GEMINI_API_KEY:
 MODEL_NAME = os.getenv("MODEL_NAME", "gemini-2.5-flash")
 EMBED_MODEL_NAME = os.getenv("EMBED_MODEL_NAME", "models/embedding-001")
 
-Settings.llm = GoogleGenAI(model=MODEL_NAME)
-Settings.embed_model = GoogleGenAIEmbedding(model_name=EMBED_MODEL_NAME)
+Settings.llm = Gemini(model=MODEL_NAME, api_key=GEMINI_API_KEY)
+Settings.embed_model = GoogleGenAIEmbedding(model_name=EMBED_MODEL_NAME, api_key=GEMINI_API_KEY)
 
 BASE_DIR = Path(__file__).resolve().parents[1] / "data"
 PERSIST_DIR = BASE_DIR / "persist"
