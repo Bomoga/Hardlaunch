@@ -49,8 +49,14 @@ body {
     z-index: 100;
 }
 
+.nav-logo {
+    display: flex;
+    align-items: center;
+}
+
 .nav-logo img {
-    height: 40px;
+    height: 48px;
+    width: auto;
 }
 
 .nav-links {
