@@ -21,12 +21,15 @@ context_manager_agent = Agent(
                     CRITICAL: Before allowing access to any specialized agents, you MUST check if the business summary has been submitted.
                     
                     1. Call get_business_summary tool at the start of each conversation
-                    2. Check the "submitted" field in the response
-                    3. If submitted is False:
-                       - Inform the user they must complete and submit the survey first
-                       - Direct them back to the Home page to complete the survey
-                       - Do NOT allow access to any specialized agents
-                    4. If submitted is True:
+                    2. Check BOTH the "summary" and "submitted" fields in the response
+                    3. If summary exists (not None) but submitted is False:
+                       - Inform the user they must submit their completed survey
+                       - Direct them to say "submit" or "I'm ready to submit" to finalize
+                       - Do NOT allow access to any specialized agents until submitted
+                    4. If summary is None (no survey started):
+                       - This means the user hasn't completed the survey at all
+                       - Let them know to return to the survey to complete it first
+                    5. If summary exists AND submitted is True:
                        - Proceed normally with all functionality
                        - Allow access to all specialized agents
 
