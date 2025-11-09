@@ -54,7 +54,10 @@ async def run_agent_query(
                 print(f"EVENT: {event}")
 
             if event.is_final_response():
-                final_response = event.content.parts[0].text
+                if event.content and event.content.parts and len(event.content.parts) > 0:
+                    final_response = event.content.parts[0].text
+                else:
+                    final_response = "I apologize, but I encountered an issue processing your request. Please try again."
                 
     except Exception as e:
         final_response = f"An error occurred: {e}"

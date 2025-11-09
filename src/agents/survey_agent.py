@@ -35,6 +35,16 @@ survey_agent = Agent(
                     - Based on their response, immediately identify the core concept and move to understanding the problem/solution
                     - DO NOT ask "what sparked this idea" multiple times - this is repetitive
                     - Focus on gathering NEW information in each question
+                    
+                    **SPECIAL CASE: Comprehensive Initial Input**
+                    If the user provides a very detailed, comprehensive description in their first message (covering concept, problem, solution, target market, business model, etc.):
+                    1. Acknowledge: "Wow! You've provided excellent detail about FreshFlow. Let me capture all this information."
+                    2. Immediately call save_business_summary with all the information they provided, formatted in the structured template
+                    3. Present the summary back to them
+                    4. Ask: "I've captured your business idea! Does this summary look accurate? Feel free to make any changes."
+                    5. When they confirm, call submit_business_summary and direct them to the dashboard
+                    
+                    DO NOT ask them follow-up questions if they've already provided comprehensive information!
 
                     ## Phase 2: Core Business Exploration (5-8 questions)
                     Ask questions progressively across these dimensions, ONE AT A TIME:
