@@ -52,14 +52,15 @@ Preferred communication style: Simple, everyday language.
 - User-scoped state storage via ADK's State system
 - Business summary stored with metadata (source, timestamp) in `BUSINESS_SUMMARY_KEY`
 
-**RAG System (Active)**
-- Lightweight knowledge-based RAG system integrated with context_manager_agent
-- In-memory startup knowledge base covering: business models, funding, market sizing, tech stacks, GTM strategies, pricing
-- Semantic keyword matching retrieves relevant best practices for each query
+**RAG System (Active - Hybrid Approach)**
+- Combines two knowledge sources for maximum accuracy:
+  1. **In-memory startup fundamentals**: Business models, funding stages, market sizing (TAM/SAM/SOM), tech stacks, GTM strategies, pricing frameworks
+  2. **LlamaIndex vector store**: "Hacking Growth" by Sean Ellis - 8 documents on growth hacking, lean experiments, user acquisition, onboarding, scaling
+- Semantic keyword matching retrieves relevant content from both sources
 - Queries enriched with user's business summary for personalized guidance
-- Provides grounded evidence from curated startup planning frameworks
-- Falls back to web search via Google ADK for real-time information
-- No heavy dependencies - optimized for fast startup and reliability
+- Provides grounded evidence from curated frameworks + growth hacking tactics
+- Graceful fallback if vector store unavailable (uses in-memory knowledge)
+- Optimized for comprehensive, accurate startup guidance
 
 **AI Models:**
 - Primary reasoning: Gemini 2.5 Flash (fast, cost-effective)

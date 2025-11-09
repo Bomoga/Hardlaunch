@@ -90,51 +90,91 @@ def rag_lookup(
     tool_context: ToolContext,
 ) -> dict[str, str]:
     """
-    Fetch grounded evidence from startup knowledge base enriched with business context.
-    Uses semantic matching to find relevant startup planning information.
+    Fetch grounded evidence from combined knowledge sources:
+    1. In-memory startup fundamentals (business models, funding, pricing, etc.)
+    2. LlamaIndex vector store (Growth Hacking documents)
+    
+    Enriched with user's business context for personalized guidance.
     """
     summary_record = tool_context.state.get(BUSINESS_SUMMARY_KEY) or {}
     summary_text = summary_record.get("summary", "")
     
     question_lower = question.lower()
     relevant_knowledge = []
+    sources = []
     
+    # Part 1: In-memory startup fundamentals
     if any(term in question_lower for term in ["business model", "canvas", "revenue stream", "value prop"]):
         relevant_knowledge.append(STARTUP_KNOWLEDGE_BASE["business_model"])
+        sources.append("Business Model Canvas")
     
     if any(term in question_lower for term in ["funding", "investment", "raise", "investor", "series", "seed"]):
         relevant_knowledge.append(STARTUP_KNOWLEDGE_BASE["funding"])
+        sources.append("Funding Stages")
     
     if any(term in question_lower for term in ["market", "tam", "sam", "som", "market size", "addressable"]):
         relevant_knowledge.append(STARTUP_KNOWLEDGE_BASE["market_sizing"])
+        sources.append("Market Sizing Framework")
     
     if any(term in question_lower for term in ["tech", "stack", "framework", "database", "hosting", "architecture"]):
         relevant_knowledge.append(STARTUP_KNOWLEDGE_BASE["tech_stack"])
+        sources.append("Tech Stack Guide")
     
     if any(term in question_lower for term in ["gtm", "go-to-market", "launch", "channel", "acquisition", "marketing"]):
         relevant_knowledge.append(STARTUP_KNOWLEDGE_BASE["gtm_strategy"])
+        sources.append("GTM Strategy")
     
     if any(term in question_lower for term in ["pricing", "price", "cost", "subscription", "tier", "freemium"]):
         relevant_knowledge.append(STARTUP_KNOWLEDGE_BASE["pricing"])
+        sources.append("Pricing Strategy")
     
-    if not relevant_knowledge:
+    # Part 2: Query LlamaIndex vector store for Growth Hacking insights
+    vector_store_results = ""
+    try:
+        from rag.service import query_documents
+        
+        enriched_question = question
+        if summary_text:
+            enriched_question = f"Given this business context: {summary_text}\n\nQuestion: {question}"
+        
+        vector_store_results = query_documents(enriched_question, top_k=3)
+        sources.append("Hacking Growth (vector store)")
+        
+    except Exception as e:
+        vector_store_results = ""
+    
+    # Combine all knowledge sources
+    knowledge_parts = []
+    
+    if relevant_knowledge:
+        knowledge_parts.append("**Startup Fundamentals:**\n" + "\n\n".join(relevant_knowledge[:2]))
+    
+    if vector_store_results:
+        knowledge_parts.append(f"**Growth Hacking Insights:**\n{vector_store_results}")
+    
+    if not knowledge_parts:
         relevant_knowledge = list(STARTUP_KNOWLEDGE_BASE.values())[:2]
+        knowledge_parts.append("**General Startup Guidance:**\n" + "\n\n".join(relevant_knowledge))
+        sources.append("Startup Knowledge Base")
     
-    knowledge_context = "\n\n".join(relevant_knowledge[:top_k])
+    combined_knowledge = "\n\n---\n\n".join(knowledge_parts)
     
-    answer = f"""Based on startup planning best practices:
+    answer = f"""Based on multiple authoritative sources:
 
-{knowledge_context}
+{combined_knowledge}
 
-Applied to your business context: {summary_text if summary_text else 'Complete the survey to get personalized guidance.'}
+**Applied to Your Business:**
+{summary_text if summary_text else 'Complete the survey to get personalized guidance tailored to your specific startup.'}
 
-For the most current information and deeper insights, consider using web search or consulting with specialized agents."""
+**Recommendations:**
+- Use the specialized agents (Business Planning, Financial Research, Market Analytics, Engineering) for deeper domain-specific guidance
+- Consider web search for the most current market data and trends"""
     
     return {
         "answer": answer,
         "business_context": summary_text,
         "query": question,
-        "sources": f"{len(relevant_knowledge)} knowledge base articles"
+        "sources": ", ".join(sources) if sources else "Knowledge base"
     }
 
 
