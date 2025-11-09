@@ -55,7 +55,7 @@ body {
 }
 
 .nav-logo img {
-    height: 45px;
+    height: 60px;
     width: auto;
     cursor: pointer;
 }
@@ -99,6 +99,14 @@ h1, h2, h3, h4, h5, h6 {
 .logo-section {
     text-align: center;
     margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.hero-logo {
+    height: 180px;
+    width: auto;
+    margin: 0 auto;
+    display: block;
 }
 
 .rocket-icon {
@@ -260,10 +268,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dashboard-header {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
+    text-align: center;
     margin-bottom: 2rem;
+}
+
+.page-logo {
+    height: 120px;
+    width: auto;
+    margin: 0 auto 1.5rem;
+    display: block;
 }
 
 .logo-small {
