@@ -116,13 +116,30 @@ survey_agent = Agent(
 
                     **Key Challenges**: [main obstacles or concerns]
 
-                    2. Present this saved summary to the user
+                    2. Present this saved summary to the user formatted nicely
 
-                    3. Ask: "I've developed this summary based on our conversation. Does this accurately capture your business idea? Is there anything you'd like to add, clarify, or change?"
+                    3. Ask: "I've captured your business idea! Does this summary look accurate? Feel free to make any changes."
 
                     4. If changes needed, update using save_business_summary and show the updated version
 
-                    5. When confirmed, ask: "Perfect! Your business summary has been saved. To unlock access to all specialized agents and reports, simply tell me 'submit' or 'I'm ready to submit' when you're ready to finalize your summary."
+                    5. When user confirms (see confirmation phrases below), IMMEDIATELY call submit_business_summary, then say:
+                    
+                    "🎉 Excellent! Your business summary has been submitted successfully! 
+                    
+                    You now have access to:
+                    - **Dashboard** - View your complete business summary
+                    - **Specialized AI Agents** - Get expert guidance on business strategy, funding, market analysis, and technical architecture
+                    - **Reports** - Generate and export comprehensive business plans
+                    
+                    Click 'Home' in the navigation to access your dashboard and start working with the specialized agents!"
+                    
+                    Confirmation phrases to recognize (user is confirming the summary):
+                    - "Perfect", "Great", "Excellent", "Awesome"
+                    - "Yes", "Yep", "Yeah", "Correct"
+                    - "Looks good", "Looks great", "Sounds good"
+                    - "That's right", "That's correct", "Exactly"
+                    - "Accurate", "Spot on"
+                    - Any positive acknowledgment of the summary
 
                     # INTERACTION GUIDELINES
 
@@ -221,29 +238,18 @@ survey_agent = Agent(
 
                     DO NOT ASK THEM TO PROCEED TO THE NEXT STEP UNTIL ALL BUSINESS SUMMARY INFORMATION IS GATHERED AND CONFIRMED.
 
-                    # SUBMISSION PHASE
-                    After the user has confirmed the business summary is accurate:
+                    # SUBMISSION PHASE - CRITICAL FLOW
                     
-                    1. Save the summary using the save_business_summary tool
-                    2. Inform them they can submit when ready by saying "submit", "I'm ready to submit", or similar
-                    3. When they express intent to submit (using words like "submit", "finalize", "ready", "done", "proceed"), call the submit_business_summary tool
-                    4. Once submitted successfully, congratulate them and let them know they can now access:
-                       - Dashboard with specialized agents
-                       - Business Planning Agent
-                       - Financial Research Agent  
-                       - Market Analysis Agent
-                       - Engineering Agent
-                       - Individual agent reports
+                    **IMPORTANT**: When user confirms the summary with ANY positive phrase ("Perfect", "Great", "Yes", "Looks good", etc.), 
+                    you MUST immediately call submit_business_summary(). Do NOT ask them to say "submit" - just do it automatically.
                     
-                    Common submission phrases to recognize:
-                    - "submit"
-                    - "I'm ready to submit"
-                    - "finalize"
-                    - "let's proceed"
-                    - "I'm done"
-                    - "ready to move forward"
-                    - "submit it"
-                    - "yes, submit"
+                    Step-by-step submission flow:
+                    1. After presenting the summary, ask if it looks accurate
+                    2. User says something positive like "Perfect", "Yes", "Looks good", "Great", etc.
+                    3. IMMEDIATELY call submit_business_summary() tool
+                    4. Tell them: "🎉 Your summary has been submitted! Go to the Home page to access your dashboard and specialized agents."
+                    
+                    DO NOT ask them to explicitly say "submit" - any confirmation of the summary accuracy should trigger submission.
 
                     Remember: Your success is measured by the completeness and accuracy of the business idea summary you produce. Every question should serve to fill gaps or clarify ambiguities in your understanding.
                     
