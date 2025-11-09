@@ -5,21 +5,56 @@ function parseMarkdown(text) {
     
     let html = text;
     
+    // Process bold/italic/code first (inline elements)
     html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
-    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*\*(.+?)\*\*\*/g, '<strong>$1</strong>');
     html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-    html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-    html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-    html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-    html = html.replace(/^\* (.+)$/gm, '<li>$1</li>');
-    html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-    html = html.replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>');
-    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-    html = html.replace(/<\/ul>\s*<ul>/g, '');
-    html = html.replace(/\n\n/g, '</p><p>');
+    html = html.replace(/`([^`]+)`/g, '<code style="background: rgba(110, 118, 129, 0.2); padding: 0.2em 0.4em; border-radius: 6px; font-size: 85%;">$1</code>');
+    
+    // Process headings
+    html = html.replace(/^### (.+)$/gm, '<h3 style="color: #58a6ff; font-size: 1.1rem; margin: 1.5rem 0 0.75rem 0;">$1</h3>');
+    html = html.replace(/^## (.+)$/gm, '<h2 style="color: #58a6ff; font-size: 1.25rem; margin: 1.75rem 0 0.75rem 0;">$1</h2>');
+    html = html.replace(/^# (.+)$/gm, '<h1 style="color: #58a6ff; font-size: 1.5rem; margin: 2rem 0 1rem 0;">$1</h1>');
+    
+    // Process lists - handle bullet points and dashes
+    const lines = html.split('\n');
+    let inList = false;
+    let processedLines = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const isBullet = /^[\*\-] (.+)$/.test(line);
+        const isNumbered = /^(\d+)\. (.+)$/.test(line);
+        
+        if (isBullet || isNumbered) {
+            if (!inList) {
+                processedLines.push('<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">');
+                inList = true;
+            }
+            const content = line.replace(/^[\*\-] (.+)$/, '$1').replace(/^(\d+)\. (.+)$/, '$2');
+            processedLines.push(`<li style="margin: 0.25rem 0; line-height: 1.6;">${content}</li>`);
+        } else {
+            if (inList) {
+                processedLines.push('</ul>');
+                inList = false;
+            }
+            processedLines.push(line);
+        }
+    }
+    if (inList) {
+        processedLines.push('</ul>');
+    }
+    
+    html = processedLines.join('\n');
+    
+    // Process paragraphs
+    html = html.replace(/\n\n+/g, '</p><p style="margin: 0.75rem 0; line-height: 1.6;">');
     html = html.replace(/\n/g, '<br>');
-    html = html.replace(/^(.+)$/, '<p>$1</p>');
+    
+    // Wrap in paragraph if not already wrapped
+    if (!html.startsWith('<')) {
+        html = `<p style="margin: 0.75rem 0; line-height: 1.6;">${html}</p>`;
+    }
     
     return html;
 }
@@ -35,9 +70,9 @@ if (summary) {
             html += `
                 <div style="margin-bottom: 1.5rem;">
                     <strong style="color: #58a6ff; font-size: 1.1rem;">💡 Your Idea</strong>
-                    <p style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
-                        ${summaryData.idea}
-                    </p>
+                    <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
+                        ${parseMarkdown(summaryData.idea)}
+                    </div>
                 </div>
             `;
         }
@@ -46,9 +81,9 @@ if (summary) {
             html += `
                 <div style="margin-bottom: 1.5rem;">
                     <strong style="color: #58a6ff; font-size: 1.1rem;">🎯 Target Audience</strong>
-                    <p style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
-                        ${summaryData.target_audience}
-                    </p>
+                    <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
+                        ${parseMarkdown(summaryData.target_audience)}
+                    </div>
                 </div>
             `;
         }
@@ -57,9 +92,9 @@ if (summary) {
             html += `
                 <div style="margin-bottom: 1.5rem;">
                     <strong style="color: #58a6ff; font-size: 1.1rem;">🏆 Competitive Advantage</strong>
-                    <p style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
-                        ${summaryData.competitive_advantage}
-                    </p>
+                    <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
+                        ${parseMarkdown(summaryData.competitive_advantage)}
+                    </div>
                 </div>
             `;
         }
@@ -68,9 +103,9 @@ if (summary) {
             html += `
                 <div style="margin-bottom: 1.5rem;">
                     <strong style="color: #58a6ff; font-size: 1.1rem;">⚠️ Constraints</strong>
-                    <p style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
-                        ${summaryData.constraints}
-                    </p>
+                    <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
+                        ${parseMarkdown(summaryData.constraints)}
+                    </div>
                 </div>
             `;
         }
@@ -79,9 +114,9 @@ if (summary) {
             html += `
                 <div style="margin-bottom: 1.5rem;">
                     <strong style="color: #58a6ff; font-size: 1.1rem;">📋 AI Summary</strong>
-                    <p style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
-                        ${summaryData.summary}
-                    </p>
+                    <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
+                        ${parseMarkdown(summaryData.summary)}
+                    </div>
                 </div>
             `;
         }
