@@ -26,32 +26,75 @@ body {
     width: 100%;
     height: 100%;
     background-color: #0a1628;
-    background-image: 
-        radial-gradient(circle, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
-        radial-gradient(circle, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
-        radial-gradient(circle, rgba(255, 255, 255, 0.4) 0.5px, transparent 0.5px),
-        radial-gradient(circle, rgba(200, 220, 255, 0.9) 1.5px, transparent 1.5px),
-        radial-gradient(circle, rgba(255, 240, 200, 0.7) 1px, transparent 1px);
-    background-size: 
-        550px 550px,
-        350px 350px,
-        250px 250px,
-        450px 450px,
-        400px 400px;
-    background-position: 
-        0 0,
-        40px 60px,
-        130px 270px,
-        70px 100px,
-        250px 50px;
-    animation: twinkle 120s ease-in-out infinite;
     z-index: 0;
     pointer-events: none;
+    overflow: hidden;
 }
 
-@keyframes twinkle {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+.stars-background::before,
+.stars-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.stars-background::before {
+    background-image: 
+        radial-gradient(circle, rgba(255, 255, 255, 0.9) 1.5px, transparent 1.5px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+        radial-gradient(circle, rgba(200, 220, 255, 0.95) 2px, transparent 2px),
+        radial-gradient(circle, rgba(255, 240, 200, 0.85) 1.5px, transparent 1.5px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
+    background-size: 
+        600px 600px,
+        450px 450px,
+        800px 800px,
+        550px 550px,
+        350px 350px;
+    background-position: 
+        0 0,
+        50px 80px,
+        150px 50px,
+        300px 200px,
+        200px 150px;
+    animation: twinkle1 4s ease-in-out infinite alternate;
+}
+
+.stars-background::after {
+    background-image: 
+        radial-gradient(circle, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+        radial-gradient(circle, rgba(220, 230, 255, 0.8) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 250, 220, 0.75) 1.5px, transparent 1.5px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.5) 0.5px, transparent 0.5px),
+        radial-gradient(circle, rgba(200, 220, 255, 0.65) 1px, transparent 1px);
+    background-size: 
+        500px 500px,
+        400px 400px,
+        700px 700px,
+        300px 300px,
+        600px 600px;
+    background-position: 
+        100px 50px,
+        250px 100px,
+        50px 200px,
+        400px 300px,
+        150px 400px;
+    animation: twinkle2 5s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes twinkle1 {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+@keyframes twinkle2 {
+    0% { opacity: 0.5; }
+    50% { opacity: 0.9; }
+    100% { opacity: 0.6; }
 }
 
 .navbar {
