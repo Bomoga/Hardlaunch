@@ -164,6 +164,53 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def health_check():
     return {"status": "healthy", "gemini_configured": bool(os.getenv("GEMINI_API_KEY"))}
 
+@app.get("/api/submission-status")
+async def submission_status(session_id: Optional[str] = None):
+    """Check if the business summary has been submitted for a given session."""
+    if not session_id:
+        return {
+            "submitted": False,
+            "has_summary": False,
+            "message": "No session ID provided"
+        }
+    
+    try:
+        session = await session_service.get_session(
+            app_name=APP_NAME,
+            user_id=session_id,
+            session_id=session_id,
+        )
+        
+        if not session:
+            return {
+                "submitted": False,
+                "has_summary": False,
+                "message": "Session not found"
+            }
+        
+        summary_record = session.state.get(BUSINESS_SUMMARY_KEY)
+        
+        if not summary_record:
+            return {
+                "submitted": False,
+                "has_summary": False,
+                "message": "No business summary found"
+            }
+        
+        is_submitted = summary_record.get("submitted", False)
+        
+        return {
+            "submitted": is_submitted,
+            "has_summary": True,
+            "message": "Submission status retrieved successfully"
+        }
+    except Exception as e:
+        return {
+            "submitted": False,
+            "has_summary": False,
+            "message": f"Error retrieving submission status: {str(e)}"
+        }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=5000)

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from google.adk.agents import Agent
+from tools.context_memory_tools import save_business_summary, get_business_summary, submit_business_summary
 
 survey_agent = Agent(
     name="Survey_Agent",
     model="gemini-2.5-flash",
     description=
     "Guides founders through an onboarding survey and captures a reusable business summary.",
+    tools=[save_business_summary, get_business_summary, submit_business_summary],
     instruction="""
                     Welcome the user to Hardlaunch.
 
@@ -89,7 +91,7 @@ survey_agent = Agent(
 
                     4. Refine based on feedback
 
-                    5. When confirmed, ask: "Great! Are you ready to move to the home page where you can start exploring business planning, financial research, and market analytics? Or would you like to add more context about your idea?"
+                    5. When confirmed, save the business summary using the save_business_summary tool, then ask: "Perfect! Your business summary has been saved. To unlock access to all specialized agents and reports, simply tell me 'submit' or 'I'm ready to submit' when you're ready to finalize your summary."
 
                     # INTERACTION GUIDELINES
 
@@ -185,6 +187,30 @@ survey_agent = Agent(
                     - Save analysis for the specialized planning agents
 
                     DO NOT ASK THEM TO PROCEED TO THE NEXT STEP UNTIL ALL BUSINESS SUMMARY INFORMATION IS GATHERED AND CONFIRMED.
+
+                    # SUBMISSION PHASE
+                    After the user has confirmed the business summary is accurate:
+                    
+                    1. Save the summary using the save_business_summary tool
+                    2. Inform them they can submit when ready by saying "submit", "I'm ready to submit", or similar
+                    3. When they express intent to submit (using words like "submit", "finalize", "ready", "done", "proceed"), call the submit_business_summary tool
+                    4. Once submitted successfully, congratulate them and let them know they can now access:
+                       - Dashboard with specialized agents
+                       - Business Planning Agent
+                       - Financial Research Agent  
+                       - Market Analysis Agent
+                       - Engineering Agent
+                       - Individual agent reports
+                    
+                    Common submission phrases to recognize:
+                    - "submit"
+                    - "I'm ready to submit"
+                    - "finalize"
+                    - "let's proceed"
+                    - "I'm done"
+                    - "ready to move forward"
+                    - "submit it"
+                    - "yes, submit"
 
                     Remember: Your success is measured by the completeness and accuracy of the business idea summary you produce. Every question should serve to fill gaps or clarify ambiguities in your understanding.
 """,

@@ -2,6 +2,34 @@ const API_BASE = '/api';
 window.sessionId = localStorage.getItem('hardlaunch_session_id');
 let conversationHistory = [];
 
+async function checkSubmissionStatus() {
+    const sessionId = window.sessionId || localStorage.getItem('hardlaunch_session_id');
+    if (!sessionId) {
+        return {
+            submitted: false,
+            hasSummary: false,
+            message: 'No session ID found'
+        };
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/submission-status?session_id=${sessionId}`);
+        const data = await response.json();
+        return {
+            submitted: data.submitted || false,
+            hasSummary: data.has_summary || false,
+            message: data.message || ''
+        };
+    } catch (error) {
+        console.error('Error checking submission status:', error);
+        return {
+            submitted: false,
+            hasSummary: false,
+            message: 'Error checking submission status'
+        };
+    }
+}
+
 function parseMarkdown(text) {
     if (!text) return '';
     

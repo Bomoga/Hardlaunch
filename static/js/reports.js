@@ -14,7 +14,7 @@ const reportTitles = {
     engineering: 'Engineering Report'
 };
 
-function checkSurveyCompletion() {
+async function checkSurveyCompletion() {
     const summary = localStorage.getItem('business_summary');
     const surveyWarning = document.getElementById('surveyWarning');
     const reportsGrid = document.getElementById('reportsGrid');
@@ -23,6 +23,20 @@ function checkSurveyCompletion() {
         surveyWarning.style.display = 'block';
         reportsGrid.style.display = 'none';
         return false;
+    }
+    
+    try {
+        const status = await fetch(`/api/submission-status?session_id=${window.sessionId}`).then(r => r.json());
+        
+        if (!status.submitted) {
+            surveyWarning.querySelector('h3').textContent = '⚠️ Survey Not Submitted';
+            surveyWarning.querySelector('p').textContent = 'Please submit your business summary first. Go to the Home page and tell the agent you\'re ready to submit.';
+            surveyWarning.style.display = 'block';
+            reportsGrid.style.display = 'none';
+            return false;
+        }
+    } catch (error) {
+        console.error('Error checking submission status:', error);
     }
     
     surveyWarning.style.display = 'none';
@@ -34,6 +48,13 @@ async function generateReport(agentType) {
     const summary = localStorage.getItem('business_summary');
     if (!summary) {
         alert('Please complete the business survey first.');
+        window.location.href = '/static/index.html';
+        return;
+    }
+    
+    const status = await fetch(`/api/submission-status?session_id=${window.sessionId}`).then(r => r.json());
+    if (!status.submitted) {
+        alert('Please submit your business summary first. Go to the Home page and tell the agent you\'re ready to submit.');
         window.location.href = '/static/index.html';
         return;
     }
@@ -131,4 +152,6 @@ document.querySelectorAll('.export-report-btn').forEach(btn => {
     });
 });
 
-checkSurveyCompletion();
+document.addEventListener('DOMContentLoaded', async () => {
+    await checkSurveyCompletion();
+});
