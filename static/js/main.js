@@ -158,7 +158,8 @@ async function sendMessage() {
     }
 }
 
-if (document.getElementById('sendButton')) {
+// Only add event listeners if agent-chat.js is not loaded (to avoid duplicate submissions on agent pages)
+if (document.getElementById('sendButton') && !document.querySelector('script[data-agent-type]')) {
     document.getElementById('sendButton').addEventListener('click', sendMessage);
     
     document.getElementById('userInput').addEventListener('keydown', (e) => {
