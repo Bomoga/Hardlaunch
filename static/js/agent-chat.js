@@ -4,7 +4,11 @@ const agentType = script.getAttribute('data-agent-type');
 window.sessionId = window.sessionId || localStorage.getItem('hardlaunch_session_id');
 window.conversationHistory = window.conversationHistory || [];
 
+console.log('Agent chat loaded for:', agentType);
+console.log('Session ID:', window.sessionId);
+
 async function sendMessage() {
+    console.log('sendMessage called from agent-chat.js');
     const input = document.getElementById('userInput');
     const message = input.value.trim();
     
