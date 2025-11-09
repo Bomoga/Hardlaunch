@@ -22,6 +22,10 @@ from google.genai.types import Content, Part
 
 from agents.survey_agent import survey_agent
 from agents.context_manager_agent import context_manager_agent
+from agents.business_planning_agent import business_planning_agent
+from agents.funding_research_agent import funding_research_agent
+from agents.market_analysis_agent import market_analysis_agent
+from agents.engineering_agent import engineering_agent
 from tools.context_memory_tools import BUSINESS_SUMMARY_KEY
 
 app = FastAPI(title="HardLaunch")
@@ -127,31 +131,30 @@ async def chat_endpoint(payload: ChatRequest):
             summary=None
         )
     
-    agent = context_manager_agent if has_summary else survey_agent
-    runner = Runner(agent=agent, session_service=session_service, app_name=APP_NAME)
-    
-    query_message = payload.message
-    
-    # Inject business summary into specialized agent queries
+    # Route directly to specialized agents when agent_type is specified
     if payload.agent_type and is_submitted and summary_record:
-        agent_prefixes = {
-            'business': 'As the Business Planning Agent, ',
-            'finance': 'As the Financial Research Agent, ',
-            'market': 'As the Market Analytics Agent, ',
-            'engineering': 'As the Engineering & Development Agent, '
+        agent_map = {
+            'business': business_planning_agent,
+            'finance': funding_research_agent,
+            'market': market_analysis_agent,
+            'engineering': engineering_agent,
         }
-        prefix = agent_prefixes.get(payload.agent_type, '')
+        agent = agent_map.get(payload.agent_type, context_manager_agent)
         
         # Prepend the business summary context
         summary_text = summary_record.get('summary', '')
-        context_block = f"""
+        query_message = f"""
 --- CURRENT BUSINESS SUMMARY ---
 {summary_text}
 --- END BUSINESS SUMMARY ---
 
-{prefix}{payload.message}
+User Question: {payload.message}
 """
-        query_message = context_block
+    else:
+        agent = context_manager_agent if has_summary else survey_agent
+        query_message = payload.message
+    
+    runner = Runner(agent=agent, session_service=session_service, app_name=APP_NAME)
 
     response_text = await run_agent_query(
         runner=runner,
