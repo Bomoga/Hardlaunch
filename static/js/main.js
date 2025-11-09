@@ -163,6 +163,16 @@ async function submitAndContinue() {
     button.disabled = true;
     button.textContent = 'Submitting...';
     
+    // Get the most recent session ID from localStorage
+    const currentSessionId = localStorage.getItem('hardlaunch_session_id');
+    
+    if (!currentSessionId) {
+        alert('No active session found. Please try refreshing the page.');
+        button.disabled = false;
+        button.textContent = 'Submit & Continue to Dashboard →';
+        return;
+    }
+    
     try {
         const response = await fetch(`${API_BASE}/submit-summary`, {
             method: 'POST',
@@ -170,14 +180,17 @@ async function submitAndContinue() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                session_id: window.sessionId
+                session_id: currentSessionId
             })
         });
         
         const data = await response.json();
         
         if (data.success) {
-            window.location.href = '/';
+            // Give a moment for the server to fully process
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 500);
         } else {
             alert('Error submitting summary: ' + data.message);
             button.disabled = false;
