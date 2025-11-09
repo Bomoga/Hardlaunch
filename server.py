@@ -109,6 +109,12 @@ async def chat_endpoint(payload: ChatRequest):
     )
     summary_record = latest_session.state.get(BUSINESS_SUMMARY_KEY)
     has_summary = bool(summary_record)
+    
+    print(f"\n🔍 DEBUG: Session {session.id}")
+    print(f"🔍 DEBUG: Has summary: {has_summary}")
+    print(f"🔍 DEBUG: Agent type requested: {payload.agent_type}")
+    if summary_record:
+        print(f"🔍 DEBUG: Summary content: {summary_record.get('summary', '')[:200]}...")
 
     if not has_summary and not latest_session.events:
         auto_runner = Runner(
@@ -133,18 +139,20 @@ async def chat_endpoint(payload: ChatRequest):
         }
         agent = agent_map.get(payload.agent_type, context_manager_agent)
         
-        # Prepend the business summary context
+        # Prepend the business summary context to EVERY message
         summary_text = summary_record.get('summary', '')
-        query_message = f"""
---- CURRENT BUSINESS SUMMARY ---
+        query_message = f"""BUSINESS CONTEXT (Use this information as the foundation for your response):
 {summary_text}
---- END BUSINESS SUMMARY ---
 
-User Question: {payload.message}
-"""
+USER REQUEST: {payload.message}
+
+IMPORTANT: Base your response on the business context provided above. Refer to specific details from the business summary in your answer."""
+        print(f"🔍 DEBUG: Injected summary into message for {payload.agent_type} agent")
     else:
         agent = context_manager_agent if has_summary else survey_agent
         query_message = payload.message
+        if payload.agent_type and not summary_record:
+            print(f"⚠️ WARNING: Agent type '{payload.agent_type}' requested but no summary available!")
     
     runner = Runner(agent=agent, session_service=session_service, app_name=APP_NAME)
 
