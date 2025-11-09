@@ -1,6 +1,30 @@
 const API_BASE = '/api';
 window.sessionId = localStorage.getItem('hardlaunch_session_id');
 
+function parseMarkdown(text) {
+    if (!text) return '';
+    
+    let html = text;
+    
+    html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    html = html.replace(/^\* (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>');
+    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+    html = html.replace(/<\/ul>\s*<ul>/g, '');
+    html = html.replace(/\n\n/g, '</p><p>');
+    html = html.replace(/\n/g, '<br>');
+    html = html.replace(/^(.+)$/, '<p>$1</p>');
+    
+    return html;
+}
+
 async function sendMessage() {
     const input = document.getElementById('userInput');
     const message = input.value.trim();
@@ -39,9 +63,20 @@ async function sendMessage() {
             localStorage.setItem('hardlaunch_session_id', window.sessionId);
         }
         
+        const formattedResponse = parseMarkdown(data.response);
         responseContent.innerHTML = `
-            <p style="margin-bottom: 1rem;"><strong>You:</strong> ${message}</p>
-            <p><strong>HardLaunch:</strong> ${data.response}</p>
+            <div style="margin-bottom: 1.5rem;">
+                <strong style="color: #58a6ff;">You:</strong>
+                <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #30363d;">
+                    ${message}
+                </div>
+            </div>
+            <div>
+                <strong style="color: #58a6ff;">HardLaunch:</strong>
+                <div class="markdown-content" style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
+                    ${formattedResponse}
+                </div>
+            </div>
         `;
         
         if (data.summary) {
