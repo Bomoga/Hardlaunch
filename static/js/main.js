@@ -207,18 +207,14 @@ async function submitAndContinue() {
         const data = await response.json();
         
         if (data.success) {
-            // Give a moment for the server to fully process
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 500);
+            // Immediately redirect without delay - the submit is done
+            window.location.href = '/';
         } else {
-            // If session not found, clear and prompt refresh
-            if (data.message && data.message.includes('Session not found')) {
-                localStorage.removeItem('hardlaunch_session_id');
-                localStorage.removeItem('business_summary');
-                window.sessionId = null;
-                alert('Your session has expired. The page will refresh to create a new session.');
-                location.reload();
+            // If session not found, ask user to refresh manually
+            if (data.message && (data.message.includes('Session not found') || data.message.includes('No business summary'))) {
+                alert('Please refresh the page and try again. Your business idea has been captured.');
+                button.disabled = false;
+                button.textContent = 'Submit & Continue to Dashboard →';
                 return;
             }
             alert('Error submitting summary: ' + data.message);
