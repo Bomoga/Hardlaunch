@@ -113,6 +113,13 @@ function revertToSurvey() {
 }
 
 function callAgent(agentType) {
+    const summary = localStorage.getItem('business_summary');
+    if (!summary) {
+        alert('Please complete the initial business survey before using specialized agents.');
+        window.location.href = '/static/index.html';
+        return;
+    }
+    
     const agentPages = {
         'business': '/static/agent-business.html',
         'finance': '/static/agent-finance.html',

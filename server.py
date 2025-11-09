@@ -114,6 +114,13 @@ async def chat_endpoint(payload: ChatRequest):
             user_id=session.user_id,
         )
 
+    if payload.agent_type and not has_summary:
+        return ChatResponse(
+            session_id=session.id,
+            response="Please complete the initial business survey before using specialized agents. Visit the home page to get started.",
+            summary=None
+        )
+    
     agent = context_manager_agent if has_summary else onboarding_agent
     runner = Runner(agent=agent, session_service=session_service, app_name=APP_NAME)
     
