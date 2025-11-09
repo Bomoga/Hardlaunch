@@ -55,8 +55,14 @@ body {
 }
 
 .nav-logo img {
-    height: 48px;
+    height: 45px;
     width: auto;
+    cursor: pointer;
+}
+
+.nav-logo img:hover {
+    opacity: 0.8;
+    transition: opacity 0.2s;
 }
 
 .nav-links {
