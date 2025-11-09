@@ -6,7 +6,7 @@ HardLaunch is an AI-powered startup planning platform that helps entrepreneurs t
 
 The platform guides users through a structured survey process to capture their startup vision, then leverages specialized AI agents to provide expert guidance on business planning, funding strategy, market analysis, and technical architecture.
 
-**Current Status:** Fully functional with Google ADK agents integrated. The frontend is connected to the backend, and the survey/agent system is operational. RAG system is temporarily simplified to improve startup time.
+**Current Status:** Fully functional with Google ADK agents integrated. The frontend is connected to the backend, and the survey/agent system is operational. RAG system is active with hybrid approach. Submission workflow implemented to gate access to specialized agents and reports.
 
 ## User Preferences
 
@@ -73,10 +73,36 @@ Preferred communication style: Simple, everyday language.
 2. **Session Check** → Backend validates/creates session ID
 3. **Survey Phase** → Survey agent collects business information progressively
 4. **Summary Generation** → Business summary saved to user state
-5. **Context Routing** → Context manager agent directs to specialized agents
-6. **RAG Enhancement** → Queries enriched with business context and external knowledge
-7. **Response Delivery** → Structured responses returned to frontend
-8. **State Persistence** → Session and summary data maintained across interactions
+5. **Submission Phase** → User explicitly submits completed summary to unlock access
+6. **Context Routing** → Context manager agent directs to specialized agents (only if submitted)
+7. **RAG Enhancement** → Queries enriched with business context and external knowledge
+8. **Response Delivery** → Structured responses returned to frontend
+9. **State Persistence** → Session and summary data maintained across interactions
+
+### Submission Workflow
+
+**Purpose**: Gates access to specialized agents and reports until the user completes and submits their business survey.
+
+**Backend Implementation**:
+- `submitted` boolean field added to BusinessSummaryRecord
+- `submit_business_summary()` tool marks summary as finalized
+- `save_business_summary()` preserves submission status during edits
+- `/api/submission-status` endpoint checks if summary is submitted
+- Context Manager enforces submission requirement before routing to specialized agents
+
+**Frontend Enforcement**:
+- Dashboard checks submission status and shows warning if not submitted
+- Reports page blocks report generation until submitted
+- Agent buttons disabled with visual feedback when not submitted
+- Clear messaging directs users back to Home page to submit
+
+**User Flow**:
+1. Complete survey questions with survey agent
+2. Confirm business summary is accurate
+3. Say "submit", "I'm ready to submit", or similar phrase
+4. Survey agent calls `submit_business_summary` tool
+5. Access unlocked to Dashboard, specialized agents, and Reports page
+6. Can still edit summary after submission (submission status preserved)
 
 ### Security Considerations
 
