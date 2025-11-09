@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from google.adk.agents import Agent
 from google.adk.tools import google_search
+from tools.context_memory_tools import get_business_summary
+from tools.rag_tools import rag_lookup_tool
 
 market_analysis_agent = Agent(
     name="Market_Analysis_Agent",
@@ -19,7 +21,9 @@ market_analysis_agent = Agent(
                     5. Develop go-to-market and customer acquisition strategies
 
                     # CONTEXT AWARENESS
-                    You receive complete business information including:
+                    CRITICAL: At the start of EVERY conversation, call get_business_summary to retrieve the user's business idea.
+                    
+                    The business summary includes:
                     - Business concept and value proposition
                     - Target market and customer segments
                     - Product/service offerings
@@ -185,7 +189,7 @@ market_analysis_agent = Agent(
                     6. Market assumptions are tested, not merely assumed
 
                     Remember: Your role brings market clarity and competitive intelligence, helping entrepreneurs make data-informed decisions about where to play and how to win.""",
-    tools=[google_search],
+    tools=[get_business_summary, google_search, rag_lookup_tool],
 )
 
 __all__ = ["market_analysis_agent", "analyze_market_trends"]

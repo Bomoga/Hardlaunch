@@ -4,6 +4,8 @@ from typing import Dict
 
 from google.adk.agents import Agent
 from google.adk.tools import FunctionTool, google_search
+from tools.context_memory_tools import get_business_summary
+from tools.rag_tools import rag_lookup_tool
 
 
 business_planning_agent = Agent(
@@ -22,7 +24,9 @@ business_planning_agent = Agent(
                     5. Provide structured strategic recommendations
 
                     # CONTEXT AWARENESS
-                    You receive a complete business idea summary from the Home Agent containing:
+                    CRITICAL: At the start of EVERY conversation, call get_business_summary to retrieve the user's business idea.
+                    
+                    The business summary contains:
                     - Core business concept and value proposition
                     - Target market information
                     - Product/service details
@@ -31,6 +35,8 @@ business_planning_agent = Agent(
                     - Goals and challenges
 
                     Use this context to provide tailored, specific guidance rather than generic advice.
+                    
+                    If the user asks to "refine my idea" or similar, first call get_business_summary to see what their idea is, then provide strategic guidance.
 
                     # CORE CAPABILITIES
 
@@ -344,7 +350,7 @@ business_planning_agent = Agent(
 
                     Remember: Your role is to be a strategic thought partner, helping entrepreneurs think through the hard questions and develop sound business strategies grounded in their specific context.
 """,
-    tools=[google_search],
+    tools=[get_business_summary, google_search, rag_lookup_tool],
 )
 
 __all__ = [
