@@ -4,6 +4,7 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime, timezone
 import os
 import sys
 
@@ -178,6 +179,7 @@ async def submit_summary(payload: dict):
         return {"success": False, "message": "No session ID provided"}
     
     try:
+        # Get the latest session
         session = await session_service.get_session(
             app_name=APP_NAME,
             user_id=session_id,
@@ -192,14 +194,40 @@ async def submit_summary(payload: dict):
         if not summary_record:
             return {"success": False, "message": "No business summary to submit"}
         
-        # Mark as submitted
+        # Mark as submitted and update timestamp
         summary_record["submitted"] = True
-        session.state[BUSINESS_SUMMARY_KEY] = summary_record
+        summary_record["updated_at"] = datetime.now(timezone.utc).isoformat()
         
-        await session_service.update_session(session)
+        # Create a new session object with updated state
+        from google.adk.sessions.types import Session
+        updated_session = Session(
+            id=session.id,
+            user_id=session.user_id,
+            state={**session.state, BUSINESS_SUMMARY_KEY: summary_record},
+            events=session.events,
+            created_at=session.created_at,
+        )
         
-        return {"success": True, "message": "Business summary submitted successfully"}
+        # Update the session in the service
+        await session_service.update_session(updated_session)
+        
+        # Verify it worked
+        verify_session = await session_service.get_session(
+            app_name=APP_NAME,
+            user_id=session_id,
+            session_id=session_id,
+        )
+        verify_record = verify_session.state.get(BUSINESS_SUMMARY_KEY)
+        
+        if verify_record and verify_record.get("submitted"):
+            return {"success": True, "message": "Business summary submitted successfully"}
+        else:
+            return {"success": False, "message": "Submission failed to persist"}
+            
     except Exception as e:
+        print(f"Submit error: {e}")
+        import traceback
+        traceback.print_exc()
         return {"success": False, "message": f"Error submitting summary: {str(e)}"}
 
 @app.get("/api/submission-status")
