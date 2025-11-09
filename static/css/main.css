@@ -114,8 +114,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .logo-section {
     text-align: center;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .hero-logo {
@@ -144,7 +144,7 @@ h1, h2, h3, h4, h5, h6 {
 .tagline {
     text-align: center;
     font-size: 1.4rem;
-    margin: 2rem 0 3rem;
+    margin: 1rem 0 2.5rem;
     color: #8b949e;
     font-weight: normal;
 }
