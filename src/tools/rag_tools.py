@@ -7,18 +7,13 @@ from rag.service import query_documents
 from tools.context_memory_tools import BUSINESS_SUMMARY_KEY
 
 
-def _rag_lookup(
+def rag_lookup(
     question: str,
     *,
     top_k: int = 5,
     tool_context: ToolContext,
 ) -> dict[str, str]:
-    """
-    Retrieve grounded evidence from the RAG document store.
-
-    The current business summary (if any) is prepended so the retriever can
-    align results with the user’s latest context.
-    """
+    """Fetch grounded evidence from the RAG document store."""
     summary_record = tool_context.state.get(BUSINESS_SUMMARY_KEY) or {}
     summary_text = summary_record.get("summary")
 
@@ -32,11 +27,4 @@ def _rag_lookup(
     return {"answer": response_text}
 
 
-rag_lookup_tool = FunctionTool(
-    name="rag_lookup",
-    description=(
-        "Search the uploaded RAG documents for concrete facts, numbers, and "
-        "quotes that support the business summary or plan."
-    ),
-    func=_rag_lookup,
-)
+rag_lookup_tool = FunctionTool(rag_lookup)
