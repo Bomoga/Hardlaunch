@@ -27,13 +27,3 @@ Francesca Dumary - Frontend/Web/Software Engineer
 Matthew Manzitti - Cyber/Security Engineer
 
 ## Demo Video
-
-## Screenshots
-
-<img width="203" height="144.6" alt="Screenshot 2025-11-09 011909" src="https://github.com/user-attachments/assets/6e98b71f-a125-4900-af68-c7022bcb1d89" />
-
-<img width="203" height="144.6" alt="Screenshot 2025-11-09 023635" src="https://github.com/user-attachments/assets/bb4ffa9c-2f91-4f93-b132-f2d16e3d8633" />
-
-<img width="203" height="144.6" alt="Screenshot 2025-11-09 023613" src="https://github.com/user-attachments/assets/77d9d603-06af-4860-856b-a102320b943f" />
-
-<img width="203" height="144.6" alt="Screenshot 2025-11-09 023658" src="https://github.com/user-attachments/assets/f0cd199d-dc84-4428-bb25-2f6de0ef77a6" />
