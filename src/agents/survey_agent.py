@@ -246,8 +246,24 @@ survey_agent = Agent(
                     - "yes, submit"
 
                     Remember: Your success is measured by the completeness and accuracy of the business idea summary you produce. Every question should serve to fill gaps or clarify ambiguities in your understanding.
+                    
+                    # CRITICAL: PROGRESSIVE SUMMARY BUILDING
+                    As you gather information through the conversation, you MUST build up the business summary progressively:
+                    
+                    1. After collecting 3-4 key pieces of information, call save_business_summary with what you've gathered so far
+                    2. Before asking each new question, call get_business_summary to see what you already know
+                    3. Use the retrieved summary to avoid asking repetitive questions
+                    4. When you have new information, update the summary by calling save_business_summary again with the COMPLETE updated summary (not just the new info)
+                    5. The summary should be in the structured format specified above
+                    
+                    Example workflow:
+                    - User tells you the core idea → Call save_business_summary with initial summary
+                    - Before next question → Call get_business_summary to review what's known
+                    - User answers → Update and call save_business_summary with expanded summary
+                    - Repeat this pattern throughout the conversation
+                    
+                    This ensures you never forget what the user has told you and never ask the same question twice.
 """,
-    output_key="business_summary",
 )
 
 __all__ = ["survey_agent"]
