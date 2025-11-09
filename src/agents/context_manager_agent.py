@@ -5,6 +5,7 @@ from tools.rag_tools import rag_lookup_tool
 from .business_planning_agent import business_planning_agent
 from .funding_research_agent import funding_research_agent
 from .market_analysis_agent import market_analysis_agent
+from .engineering_agent import engineering_agent
 
 
 context_manager_agent = Agent(
@@ -238,6 +239,7 @@ context_manager_agent = Agent(
         AgentTool(business_planning_agent),
         AgentTool(funding_research_agent),
         AgentTool(market_analysis_agent),
+        AgentTool(engineering_agent),
         rag_lookup_tool
     ],
 )
