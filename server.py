@@ -19,7 +19,7 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService, Session
 from google.genai.types import Content, Part
 
-from agents.onboarding_agent import onboarding_agent
+from agents.survey_agent import survey_agent
 from agents.context_manager_agent import context_manager_agent
 from tools.context_memory_tools import BUSINESS_SUMMARY_KEY
 
@@ -103,7 +103,7 @@ async def chat_endpoint(payload: ChatRequest):
 
     if not has_summary and not latest_session.events:
         auto_runner = Runner(
-            agent=onboarding_agent,
+            agent=survey_agent,
             session_service=session_service,
             app_name=APP_NAME,
         )
@@ -117,11 +117,11 @@ async def chat_endpoint(payload: ChatRequest):
     if payload.agent_type and not has_summary:
         return ChatResponse(
             session_id=session.id,
-            response="Please complete the initial business survey before using specialized agents. Visit the home page to get started.",
+            response="Please complete the initial business survey before using specialized agents. Visit the survey page to get started.",
             summary=None
         )
     
-    agent = context_manager_agent if has_summary else onboarding_agent
+    agent = context_manager_agent if has_summary else survey_agent
     runner = Runner(agent=agent, session_service=session_service, app_name=APP_NAME)
     
     query_message = payload.message
@@ -156,7 +156,7 @@ async def chat_endpoint(payload: ChatRequest):
 
 @app.get("/")
 async def root():
-    return FileResponse("static/index.html")
+    return FileResponse("static/dashboard.html")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 

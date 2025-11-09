@@ -95,8 +95,8 @@ if (summary) {
         summaryElement.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: #6e7681;">
                 <p style="margin-bottom: 1rem;">No business summary available yet.</p>
-                <p style="margin-bottom: 1.5rem;">Complete the survey on the home page to get started!</p>
-                <a href="/static/index.html" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #4c8dd6, #2d5fa3); color: white; text-decoration: none; border-radius: 8px; display: inline-block;">
+                <p style="margin-bottom: 1.5rem;">Complete the survey to get started!</p>
+                <a href="/static/survey.html" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #4c8dd6, #2d5fa3); color: white; text-decoration: none; border-radius: 8px; display: inline-block;">
                     Start Survey
                 </a>
             </div>
@@ -108,7 +108,7 @@ function revertToSurvey() {
     if (confirm('Are you sure you want to restart the survey? This will clear your current session.')) {
         localStorage.removeItem('hardlaunch_session_id');
         localStorage.removeItem('business_summary');
-        window.location.href = '/static/index.html';
+        window.location.href = '/static/survey.html';
     }
 }
 
@@ -116,15 +116,15 @@ async function callAgent(agentType) {
     const summary = localStorage.getItem('business_summary');
     if (!summary) {
         alert('Please complete the initial business survey before using specialized agents.');
-        window.location.href = '/static/index.html';
+        window.location.href = '/static/survey.html';
         return;
     }
     
     const status = await fetch(`/api/submission-status?session_id=${window.sessionId}`).then(r => r.json());
     
     if (!status.submitted) {
-        alert('Please submit your business summary first. Go to the Home page and tell the agent you\'re ready to submit.');
-        window.location.href = '/static/index.html';
+        alert('Please submit your business summary first. Go to the Survey page and tell the agent you\'re ready to submit.');
+        window.location.href = '/static/survey.html';
         return;
     }
     
@@ -153,9 +153,9 @@ async function checkDashboardAccess() {
             warningDiv.style.cssText = 'background: rgba(255, 193, 7, 0.1); border: 2px solid #ffc107; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; text-align: center;';
             warningDiv.innerHTML = `
                 <h3 style="color: #ffc107; margin-bottom: 0.5rem;">⚠️ Survey Not Submitted</h3>
-                <p style="color: #c9d1d9;">Your business summary is saved but not yet submitted. To access specialized agents, return to the Home page and tell the agent you're ready to submit.</p>
-                <a href="/static/index.html" style="display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #ffc107, #ff9800); color: #0a1628; text-decoration: none; border-radius: 8px; font-weight: 600;">
-                    Go to Home Page →
+                <p style="color: #c9d1d9;">Your business summary is saved but not yet submitted. To access specialized agents, return to the Survey page and tell the agent you're ready to submit.</p>
+                <a href="/static/survey.html" style="display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #ffc107, #ff9800); color: #0a1628; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                    Go to Survey Page →
                 </a>
             `;
             

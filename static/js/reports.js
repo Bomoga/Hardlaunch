@@ -48,14 +48,14 @@ async function generateReport(agentType) {
     const summary = localStorage.getItem('business_summary');
     if (!summary) {
         alert('Please complete the business survey first.');
-        window.location.href = '/static/index.html';
+        window.location.href = '/static/survey.html';
         return;
     }
     
     const status = await fetch(`/api/submission-status?session_id=${window.sessionId}`).then(r => r.json());
     if (!status.submitted) {
-        alert('Please submit your business summary first. Go to the Home page and tell the agent you\'re ready to submit.');
-        window.location.href = '/static/index.html';
+        alert('Please submit your business summary first. Go to the Survey page and tell the agent you\'re ready to submit.');
+        window.location.href = '/static/survey.html';
         return;
     }
 
