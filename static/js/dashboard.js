@@ -112,39 +112,16 @@ function revertToSurvey() {
     }
 }
 
-async function callAgent(agentType) {
-    const message = `I need help with ${agentType} planning for my startup.`;
+function callAgent(agentType) {
+    const agentPages = {
+        'business': '/static/agent-business.html',
+        'finance': '/static/agent-finance.html',
+        'market': '/static/agent-market.html',
+        'engineering': '/static/agent-engineering.html'
+    };
     
-    try {
-        const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                session_id: window.sessionId,
-                message: message
-            })
-        });
-        
-        const data = await response.json();
-        const formattedResponse = parseMarkdown(data.response);
-        
-        const modal = document.createElement('div');
-        modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;';
-        modal.innerHTML = `
-            <div style="background: #0a1628; border: 1px solid #30363d; border-radius: 12px; padding: 2rem; max-width: 800px; max-height: 80vh; overflow-y: auto;">
-                <h2 style="color: #58a6ff; margin-bottom: 1rem;">${agentType.charAt(0).toUpperCase() + agentType.slice(1)} Agent Response</h2>
-                <div class="markdown-content">${formattedResponse}</div>
-                <button onclick="this.closest('div[style*=fixed]').remove()" style="margin-top: 1.5rem; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #4c8dd6, #2d5fa3); color: white; border: none; border-radius: 8px; cursor: pointer;">Close</button>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.remove();
-        });
-        
-    } catch (error) {
-        alert(`Error calling ${agentType} agent: ${error.message}`);
+    const page = agentPages[agentType];
+    if (page) {
+        window.location.href = page;
     }
 }

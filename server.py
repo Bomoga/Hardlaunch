@@ -83,6 +83,7 @@ async def get_or_create_session(session_id: str | None) -> Session:
 class ChatRequest(BaseModel):
     session_id: Optional[str] = None
     message: str
+    agent_type: Optional[str] = None
 
 class ChatResponse(BaseModel):
     session_id: str
@@ -115,10 +116,21 @@ async def chat_endpoint(payload: ChatRequest):
 
     agent = context_manager_agent if has_summary else onboarding_agent
     runner = Runner(agent=agent, session_service=session_service, app_name=APP_NAME)
+    
+    query_message = payload.message
+    if payload.agent_type and has_summary:
+        agent_prefixes = {
+            'business': 'As the Business Planning Agent, ',
+            'finance': 'As the Financial Research Agent, ',
+            'market': 'As the Market Analytics Agent, ',
+            'engineering': 'As the Engineering & Development Agent, '
+        }
+        prefix = agent_prefixes.get(payload.agent_type, '')
+        query_message = f"{prefix}{payload.message}"
 
     response_text = await run_agent_query(
         runner=runner,
-        query=payload.message,
+        query=query_message,
         session=session,
         user_id=session.user_id,
         verbose=True,

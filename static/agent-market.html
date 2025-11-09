@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Analytics Agent - HardLaunch</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="/static/images/logo.svg" alt="HardLaunch" class="logo-img">
+        </div>
+        <div class="nav-links">
+            <a href="/static/index.html" class="nav-link">Home</a>
+            <a href="/static/dashboard.html" class="nav-link">Dashboard</a>
+            <a href="/static/agents.html" class="nav-link">Agents</a>
+            <a href="/static/reports.html" class="nav-link">Reports</a>
+            <a href="#" class="nav-link dropdown">More ▼</a>
+        </div>
+    </nav>
+
+    <div class="stars-background"></div>
+
+    <main class="container agent-chat-page">
+        <div class="agent-header">
+            <h1>📊 Market Analytics Agent</h1>
+            <p class="agent-description">Get insights on market size, competition, customer acquisition, and go-to-market strategy</p>
+        </div>
+
+        <div class="chat-container">
+            <div class="response-box" id="responseBox">
+                <p class="placeholder">Ask the Market Analytics Agent about market opportunities, competition, or marketing strategies.</p>
+                <div id="responseContent"></div>
+            </div>
+
+            <div class="input-section">
+                <textarea 
+                    id="userInput" 
+                    class="input-box" 
+                    placeholder="Ask about market size, competitors, GTM strategy..."
+                    rows="3"
+                ></textarea>
+                <button id="sendButton" class="send-button">Send</button>
+            </div>
+        </div>
+
+        <div class="agent-capabilities">
+            <h3>What I can help with:</h3>
+            <ul>
+                <li>Market size and opportunity analysis</li>
+                <li>Location and expansion strategies</li>
+                <li>Competitor research and positioning</li>
+                <li>Success rate benchmarking</li>
+                <li>Marketing and Go-To-Market (GTM) strategies</li>
+            </ul>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 SharkByte</p>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/agent-chat.js" data-agent-type="market"></script>
+</body>
+</html>
