@@ -131,7 +131,9 @@ async def chat_endpoint(payload: ChatRequest):
     runner = Runner(agent=agent, session_service=session_service, app_name=APP_NAME)
     
     query_message = payload.message
-    if payload.agent_type and has_summary:
+    
+    # Inject business summary into specialized agent queries
+    if payload.agent_type and is_submitted and summary_record:
         agent_prefixes = {
             'business': 'As the Business Planning Agent, ',
             'finance': 'As the Financial Research Agent, ',
@@ -139,7 +141,17 @@ async def chat_endpoint(payload: ChatRequest):
             'engineering': 'As the Engineering & Development Agent, '
         }
         prefix = agent_prefixes.get(payload.agent_type, '')
-        query_message = f"{prefix}{payload.message}"
+        
+        # Prepend the business summary context
+        summary_text = summary_record.get('summary', '')
+        context_block = f"""
+--- CURRENT BUSINESS SUMMARY ---
+{summary_text}
+--- END BUSINESS SUMMARY ---
+
+{prefix}{payload.message}
+"""
+        query_message = context_block
 
     response_text = await run_agent_query(
         runner=runner,
