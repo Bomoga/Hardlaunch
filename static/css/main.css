@@ -71,7 +71,7 @@ body {
 }
 
 .nav-logo img {
-    height: 70px;
+    height: 85px;
     width: auto;
     cursor: pointer;
 }
@@ -119,7 +119,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hero-logo {
-    height: 240px;
+    height: 350px;
     width: auto;
     margin: 0 auto;
     display: block;
