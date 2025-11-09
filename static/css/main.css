@@ -25,17 +25,33 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
+    background-color: #0a1628;
     background-image: 
-        radial-gradient(2px 2px at 20px 30px, #eee, transparent),
-        radial-gradient(2px 2px at 60px 70px, #fff, transparent),
-        radial-gradient(1px 1px at 50px 50px, #ddd, transparent),
-        radial-gradient(1px 1px at 130px 80px, #fff, transparent),
-        radial-gradient(2px 2px at 90px 10px, #fff, transparent);
-    background-size: 200px 200px;
-    background-repeat: repeat;
-    opacity: 0.3;
+        radial-gradient(circle, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.4) 0.5px, transparent 0.5px),
+        radial-gradient(circle, rgba(200, 220, 255, 0.9) 1.5px, transparent 1.5px),
+        radial-gradient(circle, rgba(255, 240, 200, 0.7) 1px, transparent 1px);
+    background-size: 
+        550px 550px,
+        350px 350px,
+        250px 250px,
+        450px 450px,
+        400px 400px;
+    background-position: 
+        0 0,
+        40px 60px,
+        130px 270px,
+        70px 100px,
+        250px 50px;
+    animation: twinkle 120s ease-in-out infinite;
     z-index: 0;
     pointer-events: none;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
 }
 
 .navbar {
@@ -55,7 +71,7 @@ body {
 }
 
 .nav-logo img {
-    height: 60px;
+    height: 70px;
     width: auto;
     cursor: pointer;
 }
@@ -103,7 +119,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hero-logo {
-    height: 180px;
+    height: 240px;
     width: auto;
     margin: 0 auto;
     display: block;
@@ -273,9 +289,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .page-logo {
-    height: 120px;
+    height: 160px;
     width: auto;
-    margin: 0 auto 1.5rem;
+    margin: 0 auto 2rem;
     display: block;
 }
 
