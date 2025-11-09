@@ -16,7 +16,15 @@ pandas
 tqdm
 requests
 google-adk
-google-generativeai
 google-genai
 python-dotenv
 ipython
+llama-index
+yt-dlp
+openai-whisper
+youtube-transcript-api
+requests
+beautifulsoup4
+pypdf
+torch
+python-dotenv
