@@ -156,14 +156,6 @@ async function callAgent(agentType) {
         return;
     }
     
-    const status = await fetch(`/api/submission-status?session_id=${window.sessionId}`).then(r => r.json());
-    
-    if (!status.submitted) {
-        alert('Please submit your business summary first. Go to the Survey page and tell the agent you\'re ready to submit.');
-        window.location.href = '/static/survey.html';
-        return;
-    }
-    
     const agentPages = {
         'business': '/static/agent-business.html',
         'finance': '/static/agent-finance.html',
@@ -177,40 +169,7 @@ async function callAgent(agentType) {
     }
 }
 
-async function checkDashboardAccess() {
-    const sessionId = window.sessionId || localStorage.getItem('hardlaunch_session_id');
-    if (!sessionId) return;
-    
-    try {
-        const status = await fetch(`/api/submission-status?session_id=${sessionId}`).then(r => r.json());
-        
-        if (!status.submitted && status.hasSummary) {
-            const warningDiv = document.createElement('div');
-            warningDiv.style.cssText = 'background: rgba(255, 193, 7, 0.1); border: 2px solid #ffc107; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; text-align: center;';
-            warningDiv.innerHTML = `
-                <h3 style="color: #ffc107; margin-bottom: 0.5rem;">⚠️ Survey Not Submitted</h3>
-                <p style="color: #c9d1d9;">Your business summary is saved but not yet submitted. To access specialized agents, return to the Survey page and tell the agent you're ready to submit.</p>
-                <a href="/static/survey.html" style="display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #ffc107, #ff9800); color: #0a1628; text-decoration: none; border-radius: 8px; font-weight: 600;">
-                    Go to Survey Page →
-                </a>
-            `;
-            
-            const container = document.querySelector('.dashboard-page');
-            if (container) {
-                container.insertBefore(warningDiv, container.firstChild);
-            }
-            
-            const agentButtons = document.querySelectorAll('.agent-button');
-            agentButtons.forEach(btn => {
-                if (!btn.onclick.toString().includes('revertToSurvey')) {
-                    btn.style.opacity = '0.5';
-                    btn.style.cursor = 'not-allowed';
-                }
-            });
-        }
-    } catch (error) {
-        console.error('Error checking dashboard access:', error);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', checkDashboardAccess);
+// No longer checking submission status - business summary is available once saved
+document.addEventListener('DOMContentLoaded', () => {
+    // Dashboard is always accessible if there's a business summary
+});
