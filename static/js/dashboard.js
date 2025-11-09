@@ -6,8 +6,9 @@ function parseMarkdown(text) {
     let html = text;
     
     // Process bold/italic/code first (inline elements)
+    // Order matters: check for *** first, then **, then *
     html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
-    html = html.replace(/\*\*(.+?)\*\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
     html = html.replace(/`([^`]+)`/g, '<code style="background: rgba(110, 118, 129, 0.2); padding: 0.2em 0.4em; border-radius: 6px; font-size: 85%;">$1</code>');
     
