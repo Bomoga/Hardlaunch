@@ -151,19 +151,23 @@ async function sendMessage() {
         if (data.summary) {
             localStorage.setItem('business_summary', JSON.stringify(data.summary));
             
-            const continueButton = document.createElement('div');
-            continueButton.style.cssText = 'text-align: center; margin-top: 2rem;';
-            continueButton.innerHTML = `
-                <button onclick="submitAndContinue()" 
-                    style="padding: 1rem 2rem; background: linear-gradient(135deg, #4c8dd6, #2d5fa3); color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(76, 141, 214, 0.4); transition: transform 0.2s;">
-                    Submit & Continue to Dashboard →
-                </button>
-            `;
-            
-            const responseBox = document.getElementById('responseBox');
-            if (responseBox && !document.getElementById('continueBtn')) {
-                continueButton.id = 'continueBtn';
-                responseBox.appendChild(continueButton);
+            // Only show submit button on survey page (not on agent pages)
+            const isAgentPage = document.querySelector('script[data-agent-type]');
+            if (!isAgentPage) {
+                const continueButton = document.createElement('div');
+                continueButton.style.cssText = 'text-align: center; margin-top: 2rem;';
+                continueButton.innerHTML = `
+                    <button onclick="submitAndContinue()" 
+                        style="padding: 1rem 2rem; background: linear-gradient(135deg, #4c8dd6, #2d5fa3); color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(76, 141, 214, 0.4); transition: transform 0.2s;">
+                        Submit & Continue to Dashboard →
+                    </button>
+                `;
+                
+                const responseBox = document.getElementById('responseBox');
+                if (responseBox && !document.getElementById('continueBtn')) {
+                    continueButton.id = 'continueBtn';
+                    responseBox.appendChild(continueButton);
+                }
             }
         }
         

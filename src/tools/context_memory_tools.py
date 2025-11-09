@@ -33,13 +33,21 @@ def save_business_summary(
     source: BusinessSummarySource = "survey",
     tool_context: ToolContext,
 ) -> dict[str, str]:
-    """Persist the latest business summary in user-scoped state. Preserves existing submission status."""
+    """Persist the latest business summary in user-scoped state. Will not overwrite if already submitted."""
     try:
         normalized = _normalize_summary(summary)
     except ValueError as exc:
         return {"status": "error", "message": str(exc)}
     
     existing_record: Optional[dict] = tool_context.state.get(BUSINESS_SUMMARY_KEY)
+    
+    # If already submitted, refuse to overwrite the summary
+    if existing_record and existing_record.get("submitted", False):
+        return {
+            "status": "success",
+            "message": "Business summary is already submitted and cannot be modified. Your changes have been noted but not saved.",
+        }
+    
     submitted_status = existing_record.get("submitted", False) if existing_record else False
     
     record = BusinessSummaryRecord(
