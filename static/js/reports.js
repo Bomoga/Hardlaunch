@@ -1,3 +1,5 @@
+window.sessionId = window.sessionId || localStorage.getItem('hardlaunch_session_id');
+
 const summary = localStorage.getItem('business_summary');
 if (summary) {
     const summaryData = JSON.parse(summary);

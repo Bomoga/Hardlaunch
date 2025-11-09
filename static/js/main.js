@@ -1,5 +1,5 @@
 const API_BASE = '/api';
-let sessionId = localStorage.getItem('hardlaunch_session_id');
+window.sessionId = localStorage.getItem('hardlaunch_session_id');
 
 async function sendMessage() {
     const input = document.getElementById('userInput');
@@ -27,16 +27,16 @@ async function sendMessage() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                session_id: sessionId,
+                session_id: window.sessionId,
                 message: message
             })
         });
         
         const data = await response.json();
         
-        if (data.session_id && !sessionId) {
-            sessionId = data.session_id;
-            localStorage.setItem('hardlaunch_session_id', sessionId);
+        if (data.session_id && !window.sessionId) {
+            window.sessionId = data.session_id;
+            localStorage.setItem('hardlaunch_session_id', window.sessionId);
         }
         
         responseContent.innerHTML = `
