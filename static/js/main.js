@@ -102,6 +102,21 @@ async function sendMessage() {
         
         if (data.summary) {
             localStorage.setItem('business_summary', JSON.stringify(data.summary));
+            
+            const continueButton = document.createElement('div');
+            continueButton.style.cssText = 'text-align: center; margin-top: 2rem;';
+            continueButton.innerHTML = `
+                <button onclick="window.location.href='/static/dashboard.html'" 
+                    style="padding: 1rem 2rem; background: linear-gradient(135deg, #4c8dd6, #2d5fa3); color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(76, 141, 214, 0.4); transition: transform 0.2s;">
+                    Continue to Dashboard →
+                </button>
+            `;
+            
+            const responseBox = document.getElementById('responseBox');
+            if (responseBox && !document.getElementById('continueBtn')) {
+                continueButton.id = 'continueBtn';
+                responseBox.appendChild(continueButton);
+            }
         }
         
         input.value = '';

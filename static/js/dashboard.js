@@ -29,9 +29,76 @@ if (summary) {
     const summaryData = JSON.parse(summary);
     const summaryElement = document.getElementById('businessSummary');
     if (summaryElement) {
+        let html = '<div style="line-height: 1.8;">';
+        
+        if (summaryData.idea) {
+            html += `
+                <div style="margin-bottom: 1.5rem;">
+                    <strong style="color: #58a6ff; font-size: 1.1rem;">💡 Your Idea</strong>
+                    <p style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
+                        ${summaryData.idea}
+                    </p>
+                </div>
+            `;
+        }
+        
+        if (summaryData.target_audience) {
+            html += `
+                <div style="margin-bottom: 1.5rem;">
+                    <strong style="color: #58a6ff; font-size: 1.1rem;">🎯 Target Audience</strong>
+                    <p style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
+                        ${summaryData.target_audience}
+                    </p>
+                </div>
+            `;
+        }
+        
+        if (summaryData.competitive_advantage) {
+            html += `
+                <div style="margin-bottom: 1.5rem;">
+                    <strong style="color: #58a6ff; font-size: 1.1rem;">🏆 Competitive Advantage</strong>
+                    <p style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
+                        ${summaryData.competitive_advantage}
+                    </p>
+                </div>
+            `;
+        }
+        
+        if (summaryData.constraints) {
+            html += `
+                <div style="margin-bottom: 1.5rem;">
+                    <strong style="color: #58a6ff; font-size: 1.1rem;">⚠️ Constraints</strong>
+                    <p style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
+                        ${summaryData.constraints}
+                    </p>
+                </div>
+            `;
+        }
+        
+        if (summaryData.summary) {
+            html += `
+                <div style="margin-bottom: 1.5rem;">
+                    <strong style="color: #58a6ff; font-size: 1.1rem;">📋 AI Summary</strong>
+                    <p style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
+                        ${summaryData.summary}
+                    </p>
+                </div>
+            `;
+        }
+        
+        html += '</div>';
+        summaryElement.innerHTML = html;
+    }
+} else {
+    const summaryElement = document.getElementById('businessSummary');
+    if (summaryElement) {
         summaryElement.innerHTML = `
-            <div style="margin-top: 1rem; padding: 1rem; background: rgba(88, 166, 255, 0.1); border-radius: 8px;">
-                <pre style="white-space: pre-wrap; color: #c9d1d9;">${JSON.stringify(summaryData, null, 2)}</pre>
+            <div style="text-align: center; padding: 2rem; color: #6e7681;">
+                <p style="margin-bottom: 1rem;">No business summary available yet.</p>
+                <p style="margin-bottom: 1.5rem;">Complete the survey on the home page to get started!</p>
+                <a href="/static/index.html" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #4c8dd6, #2d5fa3); color: white; text-decoration: none; border-radius: 8px; display: inline-block;">
+                    Start Survey
+                </a>
             </div>
         `;
     }

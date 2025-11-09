@@ -273,14 +273,23 @@ body {
     padding: 1.5rem;
 }
 
+.summary-card.intro-card {
+    background: linear-gradient(135deg, rgba(76, 141, 214, 0.1), rgba(22, 47, 82, 0.4));
+    border: 1px solid #58a6ff;
+}
+
 .summary-card.large {
     min-height: 300px;
 }
 
 .summary-card h3 {
-    color: #8b949e;
-    font-weight: normal;
-    margin-bottom: 1rem;
+    color: #c9d1d9;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.summary-card p {
+    color: #c9d1d9;
 }
 
 .summary-card ul {
