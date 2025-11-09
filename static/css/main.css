@@ -523,3 +523,129 @@ h1, h2, h3, h4, h5, h6 {
         font-size: 2.5rem;
     }
 }
+
+/* Agents Page - Detailed Cards */
+.agents-header-section {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.agents-header-section h1 {
+    font-size: 2.5rem;
+    margin: 1rem 0;
+    color: #f0f6fc;
+}
+
+.agents-header-section .subtitle {
+    font-size: 1.1rem;
+    color: #8b949e;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.agents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.agent-card-detailed {
+    background: rgba(22, 47, 82, 0.4);
+    border: 1px solid #30363d;
+    border-radius: 16px;
+    padding: 2rem;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.agent-card-detailed:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(88, 166, 255, 0.2);
+    border-color: #58a6ff;
+}
+
+.agent-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.agent-icon-large {
+    font-size: 3rem;
+    flex-shrink: 0;
+}
+
+.agent-title-section h2 {
+    color: #f0f6fc;
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.agent-tagline {
+    color: #58a6ff;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.agent-description {
+    margin-bottom: 1.5rem;
+    color: #c9d1d9;
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+.agent-capabilities {
+    margin-bottom: 1.5rem;
+}
+
+.agent-capabilities h4 {
+    color: #8b949e;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+
+.agent-capabilities ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.agent-capabilities li {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    position: relative;
+    color: #c9d1d9;
+    line-height: 1.6;
+}
+
+.agent-capabilities li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #58a6ff;
+    font-weight: bold;
+}
+
+.agent-capabilities strong {
+    color: #f0f6fc;
+    font-weight: 600;
+}
+
+.agent-cta {
+    display: inline-block;
+    padding: 0.875rem 1.75rem;
+    background: linear-gradient(135deg, #4c8dd6, #2d5fa3);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(76, 141, 214, 0.3);
+}
+
+.agent-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(76, 141, 214, 0.4);
+}
