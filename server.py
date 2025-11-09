@@ -109,7 +109,6 @@ async def chat_endpoint(payload: ChatRequest):
     )
     summary_record = latest_session.state.get(BUSINESS_SUMMARY_KEY)
     has_summary = bool(summary_record)
-    is_submitted = summary_record.get("submitted", False) if summary_record else False
 
     if not has_summary and not latest_session.events:
         auto_runner = Runner(
@@ -123,16 +122,9 @@ async def chat_endpoint(payload: ChatRequest):
             session=session,
             user_id=session.user_id,
         )
-
-    if payload.agent_type and not is_submitted:
-        return ChatResponse(
-            session_id=session.id,
-            response="Please complete and submit the initial business survey before using specialized agents. Visit the survey page to get started.",
-            summary=None
-        )
     
     # Route directly to specialized agents when agent_type is specified
-    if payload.agent_type and is_submitted and summary_record:
+    if payload.agent_type and summary_record:
         agent_map = {
             'business': business_planning_agent,
             'finance': funding_research_agent,
