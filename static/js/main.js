@@ -232,8 +232,10 @@ async function submitAndContinue() {
     }
 }
 
-// Only add event listeners if agent-chat.js is not loaded (to avoid duplicate submissions on agent pages)
-if (document.getElementById('sendButton') && !document.querySelector('script[data-agent-type]')) {
+// Only add event listeners if on survey page (NOT on agent pages)
+const isAgentPage = document.querySelector('script[data-agent-type]');
+if (document.getElementById('sendButton') && !isAgentPage) {
+    console.log('Adding main.js event listeners for survey page');
     document.getElementById('sendButton').addEventListener('click', sendMessage);
     
     document.getElementById('userInput').addEventListener('keydown', (e) => {
@@ -242,4 +244,6 @@ if (document.getElementById('sendButton') && !document.querySelector('script[dat
             sendMessage();
         }
     });
+} else if (isAgentPage) {
+    console.log('Skipping main.js listeners - on agent page');
 }
