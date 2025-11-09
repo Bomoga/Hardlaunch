@@ -1,5 +1,6 @@
 const API_BASE = '/api';
 window.sessionId = localStorage.getItem('hardlaunch_session_id');
+let conversationHistory = [];
 
 function parseMarkdown(text) {
     if (!text) return '';
@@ -11,7 +12,7 @@ function parseMarkdown(text) {
     html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
     html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
     html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-    html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    html = html.replace(/^## (.+)$/gm, '<h2>$2</h2>');
     html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
     html = html.replace(/^\* (.+)$/gm, '<li>$1</li>');
     html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
@@ -25,6 +26,44 @@ function parseMarkdown(text) {
     return html;
 }
 
+function addMessageToHistory(role, content, isMarkdown = false) {
+    conversationHistory.push({ role, content, isMarkdown });
+    renderConversation();
+}
+
+function renderConversation() {
+    const responseContent = document.getElementById('responseContent');
+    const placeholder = document.querySelector('.placeholder');
+    
+    if (placeholder && conversationHistory.length > 0) {
+        placeholder.style.display = 'none';
+    }
+    
+    let html = '';
+    conversationHistory.forEach(msg => {
+        const displayContent = msg.isMarkdown ? parseMarkdown(msg.content) : msg.content;
+        const borderColor = msg.role === 'user' ? '#30363d' : '#58a6ff';
+        const roleLabel = msg.role === 'user' ? 'You' : 'HardLaunch';
+        const roleColor = msg.role === 'user' ? '#8b949e' : '#58a6ff';
+        
+        html += `
+            <div style="margin-bottom: 1.5rem;">
+                <strong style="color: ${roleColor};">${roleLabel}:</strong>
+                <div class="${msg.isMarkdown ? 'markdown-content' : ''}" style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid ${borderColor};">
+                    ${displayContent}
+                </div>
+            </div>
+        `;
+    });
+    
+    responseContent.innerHTML = html;
+    
+    const responseBox = document.getElementById('responseBox');
+    if (responseBox) {
+        responseBox.scrollTop = responseBox.scrollHeight;
+    }
+}
+
 async function sendMessage() {
     const input = document.getElementById('userInput');
     const message = input.value.trim();
@@ -32,17 +71,12 @@ async function sendMessage() {
     if (!message) return;
     
     const sendButton = document.getElementById('sendButton');
-    const responseContent = document.getElementById('responseContent');
-    const placeholder = document.querySelector('.placeholder');
     
     sendButton.disabled = true;
     sendButton.textContent = 'Sending...';
     
-    if (placeholder) {
-        placeholder.style.display = 'none';
-    }
-    
-    responseContent.innerHTML = '<p style="color: #6e7681;">Thinking...</p>';
+    addMessageToHistory('user', message, false);
+    addMessageToHistory('assistant', 'Thinking...', false);
     
     try {
         const response = await fetch(`${API_BASE}/chat`, {
@@ -63,21 +97,8 @@ async function sendMessage() {
             localStorage.setItem('hardlaunch_session_id', window.sessionId);
         }
         
-        const formattedResponse = parseMarkdown(data.response);
-        responseContent.innerHTML = `
-            <div style="margin-bottom: 1.5rem;">
-                <strong style="color: #58a6ff;">You:</strong>
-                <div style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #30363d;">
-                    ${message}
-                </div>
-            </div>
-            <div>
-                <strong style="color: #58a6ff;">HardLaunch:</strong>
-                <div class="markdown-content" style="margin-top: 0.5rem; padding-left: 1rem; border-left: 3px solid #58a6ff;">
-                    ${formattedResponse}
-                </div>
-            </div>
-        `;
+        conversationHistory.pop();
+        addMessageToHistory('assistant', data.response, true);
         
         if (data.summary) {
             localStorage.setItem('business_summary', JSON.stringify(data.summary));
@@ -86,7 +107,8 @@ async function sendMessage() {
         input.value = '';
         
     } catch (error) {
-        responseContent.innerHTML = `<p style="color: #f85149;">Error: ${error.message}</p>`;
+        conversationHistory.pop();
+        addMessageToHistory('assistant', `Error: ${error.message}`, false);
     } finally {
         sendButton.disabled = false;
         sendButton.textContent = 'Send';

@@ -113,8 +113,11 @@ body {
     border-radius: 12px;
     padding: 2rem;
     min-height: 300px;
+    max-height: 500px;
     margin-bottom: 2rem;
     color: #8b949e;
+    overflow-y: auto;
+    scroll-behavior: smooth;
 }
 
 .placeholder {
