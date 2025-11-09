@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports - HardLaunch</title>
+    <title>Export Plan - HardLaunch</title>
     <link rel="stylesheet" href="/static/css/main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -24,24 +25,63 @@
 
     <main class="container reports-page">
         <div class="reports-header">
-            <div class="rocket-icon">🚀</div>
-            <h1 class="app-title">Hard<br>LAUNCH</h1>
-            <h2>Reports</h2>
+            <div class="logo-small">
+                <div class="rocket-icon-small">🚀</div>
+                <span>Hard LAUNCH</span>
+            </div>
+            <h1>Comprehensive Startup Plan</h1>
+            <p class="subtitle">Generate a complete business plan synthesized from all specialized agents</p>
         </div>
 
-        <div class="report-content">
-            <div class="report-box" id="reportBox">
-                <p>Business (idea summary, target user, ...)</p>
-                <p>Finance (budget estimation, sales target, ...)</p>
-                <p>Market (analytics, location strategy, ...)</p>
-                <p>Engineering (tech stack, software, ...)</p>
-                <div id="fullReport"></div>
-            </div>
+        <div class="plan-controls">
+            <button id="generatePlanBtn" class="primary-button">
+                <span class="button-icon">✨</span>
+                Generate Comprehensive Plan
+            </button>
+            <button id="exportPdfBtn" class="secondary-button" style="display: none;">
+                <span class="button-icon">📄</span>
+                Export as PDF
+            </button>
+        </div>
 
-            <div class="report-actions">
-                <button class="action-button" onclick="exportPlan()">Export Plan</button>
-                <button class="action-button" onclick="editPlan()">Edit Plan</button>
-                <button class="action-button" onclick="nextStage()">Next Stage</button>
+        <div id="planStatus" class="plan-status"></div>
+
+        <div id="planContent" class="plan-content" style="display: none;">
+            <div class="plan-document" id="planDocument">
+                <div class="plan-header-doc">
+                    <h1 id="planTitle"></h1>
+                    <p class="plan-date" id="planDate"></p>
+                </div>
+
+                <div class="plan-section" id="executiveSummary">
+                    <h2>Executive Summary</h2>
+                    <div class="section-content"></div>
+                </div>
+
+                <div class="plan-section" id="businessStrategy">
+                    <h2>Business Strategy</h2>
+                    <div class="section-content"></div>
+                </div>
+
+                <div class="plan-section" id="financialPlan">
+                    <h2>Financial Planning</h2>
+                    <div class="section-content"></div>
+                </div>
+
+                <div class="plan-section" id="marketAnalysis">
+                    <h2>Market Analysis</h2>
+                    <div class="section-content"></div>
+                </div>
+
+                <div class="plan-section" id="technicalArchitecture">
+                    <h2>Technical Architecture</h2>
+                    <div class="section-content"></div>
+                </div>
+
+                <div class="plan-section" id="nextSteps">
+                    <h2>Next Steps & Recommendations</h2>
+                    <div class="section-content"></div>
+                </div>
             </div>
         </div>
     </main>
