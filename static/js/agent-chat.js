@@ -2,7 +2,7 @@ const script = document.currentScript;
 const agentType = script.getAttribute('data-agent-type');
 
 window.sessionId = window.sessionId || localStorage.getItem('hardlaunch_session_id');
-let conversationHistory = [];
+window.conversationHistory = window.conversationHistory || [];
 
 const summary = localStorage.getItem('business_summary');
 if (!summary) {
@@ -43,8 +43,10 @@ async function sendMessage() {
     sendButton.disabled = true;
     sendButton.textContent = 'Sending...';
     
-    addMessageToHistory('user', message, false);
-    addMessageToHistory('assistant', 'Thinking...', false);
+    if (typeof addMessageToHistory !== 'undefined') {
+        addMessageToHistory('user', message, false);
+        addMessageToHistory('assistant', 'Thinking...', false);
+    }
     
     try {
         const response = await fetch(`${API_BASE}/chat`, {
@@ -66,8 +68,10 @@ async function sendMessage() {
             localStorage.setItem('hardlaunch_session_id', window.sessionId);
         }
         
-        conversationHistory.pop();
-        addMessageToHistory('assistant', data.response, true);
+        if (typeof addMessageToHistory !== 'undefined') {
+            window.conversationHistory.pop();
+            addMessageToHistory('assistant', data.response, true);
+        }
         
         if (data.summary) {
             localStorage.setItem('business_summary', JSON.stringify(data.summary));
@@ -76,8 +80,10 @@ async function sendMessage() {
         input.value = '';
         
     } catch (error) {
-        conversationHistory.pop();
-        addMessageToHistory('assistant', `Error: ${error.message}`, false);
+        if (typeof addMessageToHistory !== 'undefined') {
+            window.conversationHistory.pop();
+            addMessageToHistory('assistant', `Error: ${error.message}`, false);
+        }
     } finally {
         sendButton.disabled = false;
         sendButton.textContent = 'Send';

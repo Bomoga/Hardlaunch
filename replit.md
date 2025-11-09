@@ -52,11 +52,14 @@ Preferred communication style: Simple, everyday language.
 - User-scoped state storage via ADK's State system
 - Business summary stored with metadata (source, timestamp) in `BUSINESS_SUMMARY_KEY`
 
-**RAG System (Currently Simplified)**
-- RAG document retrieval temporarily simplified to improve server startup time
-- Future enhancement: Full LlamaIndex integration with vector embeddings
-- Current implementation uses business summary context directly
-- Agents rely on Google Gemini's knowledge and web search capabilities
+**RAG System (Active)**
+- Lightweight knowledge-based RAG system integrated with context_manager_agent
+- In-memory startup knowledge base covering: business models, funding, market sizing, tech stacks, GTM strategies, pricing
+- Semantic keyword matching retrieves relevant best practices for each query
+- Queries enriched with user's business summary for personalized guidance
+- Provides grounded evidence from curated startup planning frameworks
+- Falls back to web search via Google ADK for real-time information
+- No heavy dependencies - optimized for fast startup and reliability
 
 **AI Models:**
 - Primary reasoning: Gemini 2.5 Flash (fast, cost-effective)
