@@ -1,164 +1,134 @@
 window.sessionId = window.sessionId || localStorage.getItem('hardlaunch_session_id');
 
-async function generateComprehensivePlan() {
+const reportPrompts = {
+    business: 'Generate a comprehensive Business Planning Report that includes: 1) Executive Summary with problem, solution, and value proposition, 2) Business Model with revenue streams and cost structure, 3) Target Market and Customer Segments, 4) Strategic Roadmap with key milestones, 5) Risk Assessment and mitigation strategies. Format with clear headings and detailed explanations.',
+    finance: 'Generate a comprehensive Financial Report that includes: 1) Budget Breakdown with estimated costs for each major category, 2) Pricing Strategy and justification, 3) Revenue Projections for the first 12-24 months, 4) Funding Recommendations with specific funding sources and amounts, 5) Key Financial Milestones and metrics to track. Format with clear headings and specific numbers where possible.',
+    market: 'Generate a comprehensive Market Analysis Report that includes: 1) Market Size Analysis with TAM, SAM, and SOM calculations and justifications, 2) Competitive Landscape with direct and indirect competitors, 3) Competitive Advantages and differentiation strategy, 4) Go-to-Market Strategy with specific channels and tactics, 5) Customer Acquisition Plan with estimated CAC and LTV. Format with clear headings and detailed analysis.',
+    engineering: 'Generate a comprehensive Engineering Report that includes: 1) Recommended Tech Stack with justifications for each technology choice, 2) System Architecture with key components and their interactions, 3) Third-party Integrations and APIs needed, 4) Development Roadmap with phases and timeline estimates, 5) Technical Risks and infrastructure considerations. Format with clear headings and technical depth.'
+};
+
+const reportTitles = {
+    business: 'Business Planning Report',
+    finance: 'Financial Report',
+    market: 'Market Analysis Report',
+    engineering: 'Engineering Report'
+};
+
+function checkSurveyCompletion() {
+    const summary = localStorage.getItem('business_summary');
+    const surveyWarning = document.getElementById('surveyWarning');
+    const reportsGrid = document.getElementById('reportsGrid');
+    
+    if (!summary) {
+        surveyWarning.style.display = 'block';
+        reportsGrid.style.display = 'none';
+        return false;
+    }
+    
+    surveyWarning.style.display = 'none';
+    reportsGrid.style.display = 'grid';
+    return true;
+}
+
+async function generateReport(agentType) {
     const summary = localStorage.getItem('business_summary');
     if (!summary) {
-        alert('Please complete the business survey first before generating a plan.');
+        alert('Please complete the business survey first.');
         window.location.href = '/static/index.html';
         return;
     }
 
-    const generateBtn = document.getElementById('generatePlanBtn');
-    const exportBtn = document.getElementById('exportPdfBtn');
-    const planStatus = document.getElementById('planStatus');
-    const planContent = document.getElementById('planContent');
+    const card = document.querySelector(`.report-card[data-agent="${agentType}"]`);
+    const generateBtn = card.querySelector('.generate-report-btn');
+    const exportBtn = card.querySelector('.export-report-btn');
+    const contentDiv = card.querySelector('.report-content');
     
     generateBtn.disabled = true;
-    generateBtn.innerHTML = '<span class="button-icon">⏳</span> Generating Plan...';
+    generateBtn.textContent = 'Generating...';
     
-    planStatus.innerHTML = `
-        <div class="status-message loading">
-            <div class="spinner"></div>
-            <p>Consulting with all specialized agents to create your comprehensive plan...</p>
-            <p class="status-detail">This may take 30-60 seconds. Please wait.</p>
-        </div>
-    `;
-    planStatus.style.display = 'block';
-
     try {
         const summaryData = JSON.parse(summary);
         const businessIdea = summaryData.idea || summaryData.summary || 'your startup';
         
-        const sections = [
-            {
-                id: 'executiveSummary',
-                query: `Create an executive summary for ${businessIdea}. Include the problem, solution, target market, and unique value proposition in 3-4 paragraphs.`,
-                agentType: 'business'
-            },
-            {
-                id: 'businessStrategy',
-                query: `Provide a detailed business strategy for ${businessIdea}. Include business model, revenue streams, customer segments, and growth roadmap.`,
-                agentType: 'business'
-            },
-            {
-                id: 'financialPlan',
-                query: `Create a financial plan for ${businessIdea}. Include budget estimates, pricing strategy, funding recommendations, and key financial milestones.`,
-                agentType: 'finance'
-            },
-            {
-                id: 'marketAnalysis',
-                query: `Provide market analysis for ${businessIdea}. Include TAM/SAM/SOM, competitive landscape, go-to-market strategy, and customer acquisition channels.`,
-                agentType: 'market'
-            },
-            {
-                id: 'technicalArchitecture',
-                query: `Recommend technical architecture for ${businessIdea}. Include tech stack, system architecture, integrations, and development roadmap.`,
-                agentType: 'engineering'
-            }
-        ];
-
-        for (let i = 0; i < sections.length; i++) {
-            const section = sections[i];
-            planStatus.innerHTML = `
-                <div class="status-message loading">
-                    <div class="spinner"></div>
-                    <p>Generating ${section.id.replace(/([A-Z])/g, ' $1').trim()}... (${i + 1}/${sections.length})</p>
-                </div>
-            `;
-
-            const response = await fetch(`${API_BASE}/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    session_id: window.sessionId,
-                    message: section.query,
-                    agent_type: section.agentType
-                })
-            });
-
-            const data = await response.json();
-            const sectionElement = document.getElementById(section.id);
-            const contentElement = sectionElement.querySelector('.section-content');
-            contentElement.innerHTML = parseMarkdown(data.response);
-        }
-
-        const nextStepsQuery = `Based on all our discussions about ${businessIdea}, provide specific next steps and action items prioritized by importance.`;
-        const nextStepsResponse = await fetch(`${API_BASE}/chat`, {
+        const prompt = `For the business idea: "${businessIdea}"\n\n${reportPrompts[agentType]}`;
+        
+        const response = await fetch(`${API_BASE}/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 session_id: window.sessionId,
-                message: nextStepsQuery,
-                agent_type: 'business'
+                message: prompt,
+                agent_type: agentType
             })
         });
-        const nextStepsData = await nextStepsResponse.json();
-        document.getElementById('nextSteps').querySelector('.section-content').innerHTML = parseMarkdown(nextStepsData.response);
 
-        document.getElementById('planTitle').textContent = `Startup Plan: ${summaryData.idea || 'Your Business'}`;
-        document.getElementById('planDate').textContent = `Generated on ${new Date().toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-        })}`;
-
-        planStatus.innerHTML = `
-            <div class="status-message success">
-                <span class="status-icon">✅</span>
-                <p>Comprehensive plan generated successfully!</p>
-            </div>
-        `;
+        const data = await response.json();
         
-        setTimeout(() => {
-            planStatus.style.display = 'none';
-        }, 3000);
-
-        planContent.style.display = 'block';
-        exportBtn.style.display = 'inline-flex';
-        generateBtn.innerHTML = '<span class="button-icon">🔄</span> Regenerate Plan';
+        contentDiv.innerHTML = `
+            <div class="report-header-doc">
+                <h3>${reportTitles[agentType]}</h3>
+                <p class="report-date">Generated on ${new Date().toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                })}</p>
+            </div>
+            <div class="report-body">${parseMarkdown(data.response)}</div>
+        `;
+        contentDiv.style.display = 'block';
+        exportBtn.style.display = 'block';
+        generateBtn.textContent = 'Regenerate Report';
         generateBtn.disabled = false;
 
     } catch (error) {
-        planStatus.innerHTML = `
-            <div class="status-message error">
-                <span class="status-icon">❌</span>
-                <p>Error generating plan: ${error.message}</p>
-                <p class="status-detail">Please try again.</p>
-            </div>
-        `;
-        generateBtn.innerHTML = '<span class="button-icon">✨</span> Generate Comprehensive Plan';
+        alert('Error generating report: ' + error.message);
+        generateBtn.textContent = 'Generate Report';
         generateBtn.disabled = false;
     }
 }
 
-async function exportToPDF() {
-    const element = document.getElementById('planDocument');
-    const exportBtn = document.getElementById('exportPdfBtn');
+async function exportReport(agentType) {
+    const card = document.querySelector(`.report-card[data-agent="${agentType}"]`);
+    const contentDiv = card.querySelector('.report-content');
+    const exportBtn = card.querySelector('.export-report-btn');
     
     exportBtn.disabled = true;
-    exportBtn.innerHTML = '<span class="button-icon">⏳</span> Exporting...';
+    exportBtn.textContent = 'Exporting...';
 
     const opt = {
         margin: 0.5,
-        filename: 'startup-plan.pdf',
+        filename: `${agentType}-report.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
 
     try {
-        await html2pdf().set(opt).from(element).save();
-        exportBtn.innerHTML = '<span class="button-icon">✅</span> Exported!';
+        await html2pdf().set(opt).from(contentDiv).save();
+        exportBtn.textContent = 'Exported!';
         setTimeout(() => {
-            exportBtn.innerHTML = '<span class="button-icon">📄</span> Export as PDF';
+            exportBtn.textContent = 'Export PDF';
             exportBtn.disabled = false;
         }, 2000);
     } catch (error) {
         alert('Error exporting PDF: ' + error.message);
-        exportBtn.innerHTML = '<span class="button-icon">📄</span> Export as PDF';
+        exportBtn.textContent = 'Export PDF';
         exportBtn.disabled = false;
     }
 }
 
-document.getElementById('generatePlanBtn').addEventListener('click', generateComprehensivePlan);
-document.getElementById('exportPdfBtn').addEventListener('click', exportToPDF);
+document.querySelectorAll('.generate-report-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const agentType = e.target.dataset.agent;
+        generateReport(agentType);
+    });
+});
+
+document.querySelectorAll('.export-report-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const agentType = e.target.dataset.agent;
+        exportReport(agentType);
+    });
+});
+
+checkSurveyCompletion();
