@@ -167,6 +167,39 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def health_check():
     return {"status": "healthy", "gemini_configured": bool(os.getenv("GEMINI_API_KEY"))}
 
+@app.post("/api/submit-summary")
+async def submit_summary(payload: dict):
+    """Manually submit the business summary."""
+    session_id = payload.get("session_id")
+    
+    if not session_id:
+        return {"success": False, "message": "No session ID provided"}
+    
+    try:
+        session = await session_service.get_session(
+            app_name=APP_NAME,
+            user_id=session_id,
+            session_id=session_id,
+        )
+        
+        if not session:
+            return {"success": False, "message": "Session not found"}
+        
+        summary_record = session.state.get(BUSINESS_SUMMARY_KEY)
+        
+        if not summary_record:
+            return {"success": False, "message": "No business summary to submit"}
+        
+        # Mark as submitted
+        summary_record["submitted"] = True
+        session.state[BUSINESS_SUMMARY_KEY] = summary_record
+        
+        await session_service.update_session(session)
+        
+        return {"success": True, "message": "Business summary submitted successfully"}
+    except Exception as e:
+        return {"success": False, "message": f"Error submitting summary: {str(e)}"}
+
 @app.get("/api/submission-status")
 async def submission_status(session_id: Optional[str] = None):
     """Check if the business summary has been submitted for a given session."""

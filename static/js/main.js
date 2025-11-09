@@ -134,9 +134,9 @@ async function sendMessage() {
             const continueButton = document.createElement('div');
             continueButton.style.cssText = 'text-align: center; margin-top: 2rem;';
             continueButton.innerHTML = `
-                <button onclick="window.location.href='/static/dashboard.html'" 
+                <button onclick="submitAndContinue()" 
                     style="padding: 1rem 2rem; background: linear-gradient(135deg, #4c8dd6, #2d5fa3); color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(76, 141, 214, 0.4); transition: transform 0.2s;">
-                    Continue to Dashboard →
+                    Submit & Continue to Dashboard →
                 </button>
             `;
             
@@ -155,6 +155,38 @@ async function sendMessage() {
     } finally {
         sendButton.disabled = false;
         sendButton.textContent = 'Send';
+    }
+}
+
+async function submitAndContinue() {
+    const button = event.target;
+    button.disabled = true;
+    button.textContent = 'Submitting...';
+    
+    try {
+        const response = await fetch(`${API_BASE}/submit-summary`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                session_id: window.sessionId
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            window.location.href = '/';
+        } else {
+            alert('Error submitting summary: ' + data.message);
+            button.disabled = false;
+            button.textContent = 'Submit & Continue to Dashboard →';
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+        button.disabled = false;
+        button.textContent = 'Submit & Continue to Dashboard →';
     }
 }
 
