@@ -22,9 +22,7 @@ Adrian Morton - Backend/ML/AI Engineer
 
 Khanh Truong - Backend/ML/AI Engineer
 
-Francesca Dumary - Frontend/Web/Software Engineer
 
-Matthew Manzitti - Cyber/Security Engineer
 
 ## Demo Video
 
