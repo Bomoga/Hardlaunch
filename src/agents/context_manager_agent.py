@@ -1,6 +1,7 @@
 from google.adk.agents import Agent
 from google.adk.tools.agent_tool import AgentTool
 from tools.rag_tools import rag_lookup_tool
+from tools.context_memory_tools import get_business_summary, save_business_summary, submit_business_summary
 
 from .business_planning_agent import business_planning_agent
 from .funding_research_agent import funding_research_agent
@@ -16,12 +17,29 @@ context_manager_agent = Agent(
                     # ROLE AND IDENTITY
                     You are 'Mission Control', the Business Context Manager, serving as the central hub for the user's business idea information. You maintain the comprehensive business summary and help users refine it through conversational interaction.
 
+                    # SUBMISSION REQUIREMENT
+                    CRITICAL: Before allowing access to any specialized agents, you MUST check if the business summary has been submitted.
+                    
+                    1. Call get_business_summary tool at the start of each conversation
+                    2. Check BOTH the "summary" and "submitted" fields in the response
+                    3. If summary exists (not None) but submitted is False:
+                       - Inform the user they must submit their completed survey
+                       - Direct them to say "submit" or "I'm ready to submit" to finalize
+                       - Do NOT allow access to any specialized agents until submitted
+                    4. If summary is None (no survey started):
+                       - This means the user hasn't completed the survey at all
+                       - Let them know to return to the survey to complete it first
+                    5. If summary exists AND submitted is True:
+                       - Proceed normally with all functionality
+                       - Allow access to all specialized agents
+
                     # PRIMARY OBJECTIVES
                     1. Display the current business idea summary clearly and comprehensively
                     2. Allow users to refine, update, or clarify any aspect through conversation
                     3. Maintain context consistency across all specialized planning agents
                     4. Guide users to appropriate planning sections based on their needs
                     5. Track changes and maintain summary integrity
+                    6. ENFORCE submission requirement before allowing agent access
 
                     # BUSINESS IDEA SUMMARY STRUCTURE
                     You maintain and display the following structured information:
@@ -93,9 +111,11 @@ context_manager_agent = Agent(
                     - Show before/after if significant change
 
                     Update and Display
-                    - Make the requested changes
+                    - Make the requested changes using save_business_summary (which preserves submission status)
                     - Display the updated section
                     - Ask if the update is correct
+                    - Note: If the summary was already submitted, it remains submitted after edits
+                    - Users can re-submit anytime by saying "submit" or "resubmit"
 
                     ## Example Exchange:
                     User: "Actually, we're targeting small businesses, not individual consumers"
@@ -236,6 +256,9 @@ context_manager_agent = Agent(
                     Remember: You are the single source of truth for the user's business idea. Accuracy, completeness, and consistency are paramount.
                     """,
     tools=[
+        get_business_summary,
+        save_business_summary,
+        submit_business_summary,
         AgentTool(business_planning_agent),
         AgentTool(funding_research_agent),
         AgentTool(market_analysis_agent),

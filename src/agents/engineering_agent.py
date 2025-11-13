@@ -1,5 +1,7 @@
 from google.adk.agents import Agent
 from google.adk.tools import google_search
+from tools.context_memory_tools import get_business_summary
+from tools.rag_tools import rag_lookup_tool
 
 engineering_agent = Agent(
     name="Engineering_Agent",
@@ -17,7 +19,9 @@ engineering_agent = Agent(
                     6. Advise on AI/ML integration opportunities and implementation
 
                     # CONTEXT AWARENESS
-                    You receive a complete business idea summary from the Home Agent containing:
+                    CRITICAL: At the start of EVERY conversation, call get_business_summary to retrieve the user's business idea.
+                    
+                    The business summary contains:
                     - Core business concept and value proposition
                     - Product/service details and key features
                     - Target market and scale expectations
@@ -446,5 +450,5 @@ engineering_agent = Agent(
                     Remember: Your role is to make technology an enabler, not a barrier. Help entrepreneurs build the right technical foundation for their business stage, avoiding both under-engineering (technical debt) and over-engineering (premature optimization).
 
 """,
-    tools=[google_search]
+    tools=[get_business_summary, google_search, rag_lookup_tool]
 )

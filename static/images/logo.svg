@@ -1,0 +1,22 @@
+<svg width="180" height="48" viewBox="0 0 180 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Rocket Icon -->
+  <g transform="translate(8, 8)">
+    <!-- Rocket body -->
+    <path d="M16 2 L20 14 L20 28 L12 28 L12 14 Z" fill="#58a6ff"/>
+    <!-- Rocket nose -->
+    <path d="M16 2 L12 14 L20 14 Z" fill="#4c8dd6"/>
+    <!-- Rocket window -->
+    <circle cx="16" cy="18" r="3" fill="#0a1628"/>
+    <!-- Left fin -->
+    <path d="M12 22 L8 28 L12 28 Z" fill="#2d5fa3"/>
+    <!-- Right fin -->
+    <path d="M20 22 L24 28 L20 28 Z" fill="#2d5fa3"/>
+    <!-- Flame -->
+    <ellipse cx="16" cy="30" rx="4" ry="2" fill="#ff7b72" opacity="0.8"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="44" y="32" font-family="'Proxima Nova', 'Inter', sans-serif" font-size="22" font-weight="600" fill="#f0f6fc" letter-spacing="-0.5">
+    Hard<tspan fill="#58a6ff">LAUNCH</tspan>
+  </text>
+</svg>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Survey - HardLaunch</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="/static/images/logo.png" alt="HardLaunch" class="logo-img">
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/static/survey.html" class="nav-link active">Survey</a>
+            <a href="/static/agents.html" class="nav-link">Agents</a>
+            <a href="/static/reports.html" class="nav-link">Reports</a>
+            <a href="#" class="nav-link dropdown">More ▼</a>
+        </div>
+    </nav>
+
+    <div class="stars-background">
+        <div class="planet planet-1"></div>
+        <div class="planet planet-2"></div>
+        <div class="planet planet-3"></div>
+        <div class="planet planet-4"></div>
+    </div>
+
+    <main class="container home-page">
+        <div class="logo-section">
+            <img src="/static/images/logo.png" alt="HardLaunch" class="hero-logo">
+        </div>
+
+        <h2 class="tagline">Turn Your Vision Into a Billion-Dollar Blueprint</h2>
+
+        <div class="chat-container">
+            <div class="response-box" id="responseBox">
+                <p class="placeholder">Agent response and summary will appear here.</p>
+                <div id="responseContent"></div>
+            </div>
+
+            <div class="input-section">
+                <textarea 
+                    id="userInput" 
+                    class="input-box" 
+                    placeholder="Describe your startup here."
+                    rows="3"
+                ></textarea>
+                <button id="sendButton" class="send-button">Send</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 SharkByte</p>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

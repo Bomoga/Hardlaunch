@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - HardLaunch</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="/static/images/logo.png" alt="HardLaunch" class="logo-img">
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/static/survey.html" class="nav-link">Survey</a>
+            <a href="/static/agents.html" class="nav-link">Agents</a>
+            <a href="/static/reports.html" class="nav-link active">Reports</a>
+            <a href="#" class="nav-link dropdown">More ▼</a>
+        </div>
+    </nav>
+
+    <div class="stars-background">
+        <div class="planet planet-1"></div>
+        <div class="planet planet-2"></div>
+        <div class="planet planet-3"></div>
+        <div class="planet planet-4"></div>
+    </div>
+
+    <main class="container reports-page">
+        <div class="reports-header">
+            <img src="/static/images/logo.png" alt="HardLaunch" class="page-logo">
+            <h1>Agent Reports</h1>
+            <p class="subtitle">Individual reports from each specialized agent</p>
+        </div>
+
+        <div id="surveyWarning" class="survey-warning" style="display: none;">
+            <div class="warning-content">
+                <span class="warning-icon">⚠️</span>
+                <div>
+                    <h3>Survey Required</h3>
+                    <p>Please complete the business survey first to generate agent reports.</p>
+                    <a href="/static/survey.html" class="warning-button">Start Survey</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="reportsGrid" class="reports-grid">
+            <div class="report-card" data-agent="business">
+                <div class="report-card-header">
+                    <div class="report-icon">💼</div>
+                    <h2>Business Planning Report</h2>
+                </div>
+                <p class="report-description">Strategic foundation, business model, target market, and growth roadmap</p>
+                <button class="generate-report-btn" data-agent="business">Generate Report</button>
+                <div class="report-content" style="display: none;"></div>
+                <button class="export-report-btn" style="display: none;" data-agent="business">Export PDF</button>
+            </div>
+
+            <div class="report-card" data-agent="finance">
+                <div class="report-card-header">
+                    <div class="report-icon">💰</div>
+                    <h2>Financial Report</h2>
+                </div>
+                <p class="report-description">Budget estimates, pricing strategy, funding recommendations, and financial milestones</p>
+                <button class="generate-report-btn" data-agent="finance">Generate Report</button>
+                <div class="report-content" style="display: none;"></div>
+                <button class="export-report-btn" style="display: none;" data-agent="finance">Export PDF</button>
+            </div>
+
+            <div class="report-card" data-agent="market">
+                <div class="report-card-header">
+                    <div class="report-icon">📊</div>
+                    <h2>Market Analysis Report</h2>
+                </div>
+                <p class="report-description">TAM/SAM/SOM, competitive landscape, go-to-market strategy, and customer acquisition</p>
+                <button class="generate-report-btn" data-agent="market">Generate Report</button>
+                <div class="report-content" style="display: none;"></div>
+                <button class="export-report-btn" style="display: none;" data-agent="market">Export PDF</button>
+            </div>
+
+            <div class="report-card" data-agent="engineering">
+                <div class="report-card-header">
+                    <div class="report-icon">⚙️</div>
+                    <h2>Engineering Report</h2>
+                </div>
+                <p class="report-description">Tech stack recommendations, system architecture, integrations, and development roadmap</p>
+                <button class="generate-report-btn" data-agent="engineering">Generate Report</button>
+                <div class="report-content" style="display: none;"></div>
+                <button class="export-report-btn" style="display: none;" data-agent="engineering">Export PDF</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 SharkByte</p>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/reports.js"></script>
+</body>
+</html>

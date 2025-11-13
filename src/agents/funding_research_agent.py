@@ -1,5 +1,7 @@
 from google.adk.agents import Agent
 from google.adk.tools import google_search
+from tools.context_memory_tools import get_business_summary
+from tools.rag_tools import rag_lookup_tool
 
 funding_research_agent = Agent(
     name="Funding_Agent",
@@ -16,7 +18,9 @@ funding_research_agent = Agent(
                     5. Build financial roadmaps aligned with business milestones
 
                     # CONTEXT AWARENESS
-                    You receive complete business information including:
+                    CRITICAL: At the start of EVERY conversation, call get_business_summary to retrieve the user's business idea.
+                    
+                    The business summary includes:
                     - Business model and revenue streams
                     - Target market and customer segments
                     - Product/service offerings
@@ -173,5 +177,5 @@ funding_research_agent = Agent(
 
                     Remember: Your role is to bring financial clarity and realism, helping entrepreneurs build businesses on solid financial foundations.
 """,
-    tools=[google_search]
+    tools=[get_business_summary, google_search, rag_lookup_tool]
 )
